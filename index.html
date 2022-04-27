@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" type="favicon.ico" href="favicon.ico" />
+<!-- ... -->
+  <script src="//cdn.jsdelivr.net/npm/@waline/client/dist/waline.js"></script>
+  <link
+    rel="style"
+    href="//cdn.jsdelivr.net/npm/@waline/client/dist/waline.css"
+  />
+<!-- ... -->
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Hasok</title>
@@ -15,13 +23,6 @@ Tooplate 2122 Nano Folio
 https://www.tooplate.com/view/2122-nano-folio
 
 -->
-  <!-- ... -->
-  <script src="//cdn.jsdelivr.net/npm/@waline/client/dist/waline.js"></script>
-  <link
-    rel="style"
-    href="//cdn.jsdelivr.net/npm/@waline/client/dist/waline.css"
-  />
-  <!-- ... -->
 </head>
 <body>
 	<div class="tm-container-fluid">
@@ -45,7 +46,7 @@ https://www.tooplate.com/view/2122-nano-folio
 			<ul class="filters-button-group tm-mb-40">
 				<li><a href="#" data-filter=".mod">模组</a></li>
 				<li><a href="#" data-filter=".img">渲染</a></li>
-				<li><a href="#" data-filter=".other">其它</a></li>
+				<li><a href="#" data-filter=".portraits">材质</a></li>
 				<li><a href="#" class="active" data-filter="*">所有</a></li>
 			</ul>
 			<div class="tm-gallery">				
@@ -54,7 +55,7 @@ https://www.tooplate.com/view/2122-nano-folio
 		            	<img src="img/xuanran_01.jpg" alt="City Scape" class="img-fluid" />
 		            </a>
 		        </div>
-				<div class="tm-gallery-item img">
+				<div class="tm-gallery-item portraits">
 		            <a href="img/img-02.jpg">
 		            	<img src="img/tn-img-02.jpg" alt="Beautiful Lady" class="img-fluid" />
 		            </a>
@@ -111,48 +112,13 @@ https://www.tooplate.com/view/2122-nano-folio
 		        </div>
 			</div>			
 		</div>
-
-		<section class="tm-contact tm-mb-50 tm-bgcolor-3 tm-border-rounded">
-			<div class="tm-contact-header tm-flex-center">
-				<i class="fas fa-map-pin fa-3x"></i>
-				<h2>Contact</h2>
-			</div>
-			<div class="tm-contact-info">
-				<address class="tm-mb-30">
-					120 Curabitur sed tortor ultrices,
-					congue odio eget, posuere urna.
-					Praesent at rhoncus 10680
-				</address>
-				<div class="tm-text-white tm-mb-40">Tel: <a href="tel:0100200340" class="tm-link-white">010-020-0340</a></div>
-				<div class="tm-flex">
-					<a href="https://facebook.com" class="tm-social-link"><i class="fab fa-facebook"></i></a>
-					<a href="https://twitter.com" class="tm-social-link"><i class="fab fa-twitter"></i></a>
-					<a href="https://instagram.com" class="tm-social-link"><i class="fab fa-instagram"></i></a>
-				</div>
-			</div>
-			<div class="tm-contact-form-container">
-				<form id="contact-form" action="" method="POST" class="tm-contact-form">
-		          	<input type="text" name="name" placeholder="name" required="" />
-		          	<input type="email" name="email" placeholder="email" required="" />
-		          	<textarea rows="5" name="message" class="tm-mb-30" placeholder="message" required=""></textarea>		          	
-		          	<button type="submit" class="tm-right tm-btn-submit">send</button>          	
-		        </form>    
-			</div>
-		</section>
-  <!-- ... -->
-  <div id="waline"></div>
-  <script>
-    Waline.init({
-      el: '#waline',
-      serverURL: 'https://your-domain.vercel.app',
-    });
-  </script>
-
 		<footer class="tm-footer">
-			Copyright 2020 Nano Folio - Design: <a rel="sponsored" href="https://www.tooplate.com" class="tm-link-gray">Tooplate</a>
+			友情链接
+		</footer>
+		<footer class="tm-footer">
+			<a rel="sponsored" href="https://csd.pub/" class="tm-link-gray">Cesirdy</a>、<a rel="sponsored" href="https://creepzzl.top/" class="tm-link-gray">Creepzzl</a>
 		</footer>
 	</div>
-
 	<script src="js/jquery.min.js"></script>
 	<script src="js/imagesloaded.pkgd.min.js"></script>
 	<script src="js/isotope.pkgd.min.js"></script>
