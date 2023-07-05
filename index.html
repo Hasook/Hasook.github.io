@@ -1,94 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>实时记录句子</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Sentence Recorder</title>
 </head>
 <body>
-    <h1>实时记录句子</h1>
-    
-    <div>
-        <input type="text" id="sentenceInput" placeholder="输入句子">
-        <button onclick="addSentence()">添加</button>
-    </div>
-    
-    <ul id="sentenceList">
-    </ul>
-    
+    <h1>Sentence Recorder</h1>
+    <form id="sentenceForm">
+        <label for="sentenceInput">Enter a sentence:</label>
+        <input type="text" id="sentenceInput" required>
+        <button type="submit">Save</button>
+    </form>
+    <h2>Saved Sentences:</h2>
+    <ul id="sentenceList"></ul>
+
     <script>
-        // GitHub库信息
+        // GitHub repository information
         const username = 'hasook';
         const repo = 'Hasook.github.io';
         const branch = 'main';
-        const path = 'sentences.txt';
-        
-        // GitHub API认证信息
-        const token = 'hh2002512';
-        
-        // 获取句子列表
-        function getSentences() {
-            $.ajax({
-                url: `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`,
+
+        // Function to save the sentence to GitHub
+        async function saveSentence(sentence) {
+            const url = `https://api.github.com/repos/${username}/${repo}/contents/sentences.txt`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const content = window.btoa(`${data.content}\n${sentence}`);
+            const body = {
+                message: 'Add new sentence',
+                content: content,
+                sha: data.sha,
+                branch: branch
+            };
+            await fetch(url, {
+                method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer hh2002512'
                 },
-                method: 'GET',
-                success: function(data) {
-                    const sentences = atob(data.content).split('\n');
-                    const sentenceList = $('#sentenceList');
-                    sentenceList.empty();
-                    sentences.forEach(sentence => {
-                        if (sentence.trim() !== '') {
-                            sentenceList.append(`<li>${sentence}</li>`);
-                        }
-                    });
-                }
+                body: JSON.stringify(body)
             });
         }
-        
-        // 添加句子
-        function addSentence() {
-            const sentenceInput = $('#sentenceInput');
-            const sentence = sentenceInput.val();
-            if (sentence.trim() !== '') {
-                $.ajax({
-                    url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    method: 'GET',
-                    success: function(data) {
-                        const content = atob(data.content);
-                        const sentences = content.split('\n');
-                        sentences.push(sentence);
-                        const newContent = btoa(sentences.join('\n'));
-                        
-                        $.ajax({
-                            url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            },
-                            method: 'PUT',
-                            data: JSON.stringify({
-                                message: 'Add sentence',
-                                content: newContent,
-                                sha: data.sha,
-                                branch: branch
-                            }),
-                            success: function() {
-                                sentenceInput.val('');
-                                getSentences();
-                            }
-                        });
-                    }
-                });
-            }
+
+        // Function to display saved sentences
+        async function displaySentences() {
+            const url = `https://api.github.com/repos/${username}/${repo}/contents/sentences.txt`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const content = window.atob(data.content).split('\n').filter(Boolean);
+            const sentenceList = document.getElementById('sentenceList');
+            sentenceList.innerHTML = '';
+            content.forEach(sentence => {
+                const li = document.createElement('li');
+                li.textContent = sentence;
+                sentenceList.appendChild(li);
+            });
         }
-        
-        // 页面加载完成后获取句子列表
-        $(document).ready(function() {
-            getSentences();
+
+        // Submit form event listener
+        document.getElementById('sentenceForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const sentenceInput = document.getElementById('sentenceInput');
+            const sentence = sentenceInput.value;
+            saveSentence(sentence)
+                .then(() => {
+                    sentenceInput.value = '';
+                    displaySentences();
+                })
+                .catch(error => console.error(error));
         });
+
+        // Initial display of saved sentences
+        displaySentences();
     </script>
 </body>
 </html>
