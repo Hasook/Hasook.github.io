@@ -1,76 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>句子记录器</title>
+  <title>Sentence Recorder</title>
+  <style>
+    #sentenceInput {
+      width: 300px;
+      margin-bottom: 10px;
+    }
+    #sentenceList {
+      list-style-type: none;
+      padding: 0;
+    }
+  </style>
 </head>
 <body>
-    <h1>句子记录器</h1>
-    <form id="sentenceForm">
-        <label for="sentenceInput">输入一个句子：</label>
-        <input type="text" id="sentenceInput" required>
-        <button type="submit">保存</button>
-    </form>
-    <h2>已保存的句子：</h2>
-    <ul id="sentenceList"></ul>
-
-    <script>
-        // GitHub 仓库信息
-        const username = 'hasook';
-        const repo = 'Hasook.github.io';
-        const branch = 'main';
-
-        // 保存句子到 GitHub
-        async function saveSentence(sentence) {
-            const url = `https://api.github.com/repos/${username}/${repo}/contents/sentences.txt`;
-            const response = await fetch(url);
-            const data = await response.json();
-            const content = window.btoa(`${data.content}\n${encodeURIComponent(sentence)}`);
-            const body = {
-                message: '添加新句子',
-                content: content,
-                sha: data.sha,
-                branch: branch
-            };
-            await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer hh2002512'
-                },
-                body: JSON.stringify(body)
-            });
-        }
-
-        // 显示已保存的句子
-        async function displaySentences() {
-            const url = `https://api.github.com/repos/${username}/${repo}/contents/sentences.txt`;
-            const response = await fetch(url);
-            const data = await response.json();
-            const content = window.atob(data.content).split('\n').filter(Boolean);
-            const sentenceList = document.getElementById('sentenceList');
-            sentenceList.innerHTML = '';
-            content.forEach(sentence => {
-                const li = document.createElement('li');
-                li.textContent = sentence;
-                sentenceList.appendChild(li);
-            });
-        }
-
-        // 提交表单事件监听器
-        document.getElementById('sentenceForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const sentenceInput = document.getElementById('sentenceInput');
-            const sentence = sentenceInput.value;
-            saveSentence(sentence)
-                .then(() => {
-                    sentenceInput.value = '';
-                    displaySentences();
-                })
-                .catch(error => console.error(error));
-        });
-
-        // 初始显示已保存的句子
-        displaySentences();
-    </script>
+  <h1>Sentence Recorder</h1>
+  
+  <input type="text" id="sentenceInput" placeholder="Enter a sentence">
+  <button onclick="addSentence()">Add Sentence</button>
+  
+  <ul id="sentenceList"></ul>
+  
+  <script>
+    function addSentence() {
+      var sentenceInput = document.getElementById("sentenceInput");
+      var sentenceList = document.getElementById("sentenceList");
+      
+      var sentence = sentenceInput.value;
+      if (sentence !== "") {
+        var listItem = document.createElement("li");
+        listItem.textContent = sentence;
+        sentenceList.appendChild(listItem);
+        sentenceInput.value = "";
+      }
+    }
+  </script>
 </body>
 </html>
