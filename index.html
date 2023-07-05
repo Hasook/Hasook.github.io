@@ -2,107 +2,94 @@
 <html>
 <head>
     <title>实时记录句子</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
     <h1>实时记录句子</h1>
-    <input type="text" id="sentenceInput" placeholder="输入句子">
-    <button onclick="saveSentence()">保存</button>
-    <ul id="sentenceList"></ul>
-
+    
+    <div>
+        <input type="text" id="sentenceInput" placeholder="输入句子">
+        <button onclick="addSentence()">添加</button>
+    </div>
+    
+    <ul id="sentenceList">
+    </ul>
+    
     <script>
-        // GitHub相关配置
-        const username = 'hasook';
-        const repo = 'Hasook.github.io';
+        // GitHub库信息
+        const username = 'Hasook';
+        const repo = 'Hasook.github.io
+';
         const branch = 'main';
         const path = 'sentences.txt';
-        const token = 'hh2002512'; // 需要有repo权限
-
-        // 获取已保存的句子
-        $(document).ready(function() {
+        
+        // GitHub API认证信息
+        const token = 'hh2002512';
+        
+        // 获取句子列表
+        function getSentences() {
             $.ajax({
-                url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                url: `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`,
                 headers: {
-                    'Authorization': `token ${token}`
+                    'Authorization': `Bearer ${token}`
                 },
                 method: 'GET',
-                dataType: 'json',
                 success: function(data) {
-                    const content = atob(data.content);
-                    const sentences = content.split('\n');
-                    sentences.forEach(function(sentence) {
-                        if (sentence !== '') {
-                            $('#sentenceList').append(`<li>${sentence}</li>`);
+                    const sentences = atob(data.content).split('\n');
+                    const sentenceList = $('#sentenceList');
+                    sentenceList.empty();
+                    sentences.forEach(sentence => {
+                        if (sentence.trim() !== '') {
+                            sentenceList.append(`<li>${sentence}</li>`);
                         }
                     });
                 }
             });
-        });
-
-        // 保存句子到GitHub
-        function saveSentence() {
-            const sentence = $('#sentenceInput').val();
-            if (sentence !== '') {
+        }
+        
+        // 添加句子
+        function addSentence() {
+            const sentenceInput = $('#sentenceInput');
+            const sentence = sentenceInput.val();
+            if (sentence.trim() !== '') {
                 $.ajax({
                     url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
                     headers: {
-                        'Authorization': `token ${token}`
+                        'Authorization': `Bearer ${token}`
                     },
                     method: 'GET',
-                    dataType: 'json',
                     success: function(data) {
                         const content = atob(data.content);
                         const sentences = content.split('\n');
                         sentences.push(sentence);
-                        const updatedContent = sentences.join('\n');
-                        const encodedContent = btoa(updatedContent);
-                        const sha = data.sha;
-
+                        const newContent = btoa(sentences.join('\n'));
+                        
                         $.ajax({
                             url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
                             headers: {
-                                'Authorization': `token ${token}`
+                                'Authorization': `Bearer ${token}`
                             },
                             method: 'PUT',
-                            contentType: 'application/json',
                             data: JSON.stringify({
                                 message: 'Add sentence',
-                                content: encodedContent,
-                                sha: sha,
+                                content: newContent,
+                                sha: data.sha,
                                 branch: branch
                             }),
                             success: function() {
-                                $('#sentenceList').append(`<li>${sentence}</li>`);
-                                $('#sentenceInput').val('');
-                            }
-                        });
-                    },
-                    error: function() {
-                        const sentences = [sentence];
-                        const updatedContent = sentences.join('\n');
-                        const encodedContent = btoa(updatedContent);
-
-                        $.ajax({
-                            url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
-                            headers: {
-                                'Authorization': `token ${token}`
-                            },
-                            method: 'PUT',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                message: 'Add sentence',
-                                content: encodedContent,
-                                branch: branch
-                            }),
-                            success: function() {
-                                $('#sentenceList').append(`<li>${sentence}</li>`);
-                                $('#sentenceInput').val('');
+                                sentenceInput.val('');
+                                getSentences();
                             }
                         });
                     }
                 });
             }
         }
+        
+        // 页面加载完成后获取句子列表
+        $(document).ready(function() {
+            getSentences();
+        });
     </script>
 </body>
 </html>
