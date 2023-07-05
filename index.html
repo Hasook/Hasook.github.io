@@ -24,7 +24,7 @@
             const url = `https://api.github.com/repos/${username}/${repo}/contents/sentences.txt`;
             const response = await fetch(url);
             const data = await response.json();
-            const content = window.btoa(`${data.content}\n${sentence}`);
+            const content = window.btoa(`${data.content}\n${encodeURIComponent(sentence)}`);
             const body = {
                 message: '添加新句子',
                 content: content,
