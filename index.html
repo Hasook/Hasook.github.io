@@ -21,7 +21,7 @@
         // 获取已保存的句子
         $(document).ready(function() {
             $.ajax({
-                url: `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`,
+                url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
                 headers: {
                     'Authorization': `token ${token}`
                 },
@@ -69,6 +69,29 @@
                                 message: 'Add sentence',
                                 content: encodedContent,
                                 sha: sha,
+                                branch: branch
+                            }),
+                            success: function() {
+                                $('#sentenceList').append(`<li>${sentence}</li>`);
+                                $('#sentenceInput').val('');
+                            }
+                        });
+                    },
+                    error: function() {
+                        const sentences = [sentence];
+                        const updatedContent = sentences.join('\n');
+                        const encodedContent = btoa(updatedContent);
+
+                        $.ajax({
+                            url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                            headers: {
+                                'Authorization': `token ${token}`
+                            },
+                            method: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                message: 'Add sentence',
+                                content: encodedContent,
                                 branch: branch
                             }),
                             success: function() {
