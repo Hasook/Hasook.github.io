@@ -1,97 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>实时共享记录句子</title>
+    <title>实时记录句子</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <h1>实时共享记录句子</h1>
-
-    <form id="sentence-form">
-        <input type="text" id="sentence-input" placeholder="输入句子">
-        <button type="submit">提交</button>
-    </form>
-
-    <ul id="sentence-list">
-        <!-- 这里将显示已记录的句子 -->
-    </ul>
+    <h1>实时记录句子</h1>
+    <input type="text" id="sentenceInput" placeholder="输入句子">
+    <button onclick="saveSentence()">保存</button>
+    <ul id="sentenceList"></ul>
 
     <script>
-        const form = document.getElementById('sentence-form');
-        const input = document.getElementById('sentence-input');
-        const list = document.getElementById('sentence-list');
+        // GitHub相关配置
+        const username = 'hasook';
+        const repo = 'Hasook.github.io';
+        const branch = 'index.html';
+        const path = 'sentences.txt';
+        const token = 'hh2002512'; // 需要有repo权限
 
-        // 定义一个函数，用于向GitHub仓库提交句子
-        function saveSentence(sentence) {
-            const date = Hasook.github.io Date().toLocaleString();
-            const content = `- ${date}: ${sentence}\n`;
-
-            fetch('https://api.github.com/repos/Hasook/Hasook.github.io/contents/sentences.txt', {
-                method: 'GET',
+        // 获取已保存的句子
+        $(document).ready(function() {
+            $.ajax({
+                url: `https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`,
                 headers: {
-                    'Authorization': 'Bearer hh2002512'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const sha = data.sha;
-
-                fetch('https://api.github.com/repos/Hasook/Hasook.github.io/contents/sentences.txt', {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer hh2002512',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: '新增句子',
-                        content: btoa(content),
-                        sha: sha
-                    })
-                })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error(error));
-            })
-            .catch(error => console.error(error));
-        }
-
-        // 定义一个函数，用于从GitHub仓库获取所有句子并显示在列表中
-        function getSentences() {
-            fetch('https://api.github.com/repos/Hasook/Hasook.github.io/contents/sentences.txt', {
+                    'Authorization': `token ${token}`
+                },
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer hh2002512'
+                dataType: 'json',
+                success: function(data) {
+                    const content = atob(data.content);
+                    const sentences = content.split('\n');
+                    sentences.forEach(function(sentence) {
+                        if (sentence !== '') {
+                            $('#sentenceList').append(`<li>${sentence}</li>`);
+                        }
+                    });
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const content = atob(data.content);
-                const sentences = content.split('\n').filter(sentence => sentence.trim() !== '');
-
-                sentences.forEach(sentence => {
-                    const listItem = document.createElement('li');
-                    listItem.innerText = sentence;
-                    list.appendChild(listItem);
-                });
-            })
-            .catch(error => console.error(error));
-        }
-
-        // 当表单提交时执行的函数
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const sentence = input.value;
-            saveSentence(sentence);
-
-            const listItem = document.createElement('li');
-            listItem.innerText = sentence;
-            list.appendChild(listItem);
-
-            input.value = '';
+            });
         });
 
-        // 页面加载时获取所有句子
-        getSentences();
+        // 保存句子到GitHub
+        function saveSentence() {
+            const sentence = $('#sentenceInput').val();
+            if (sentence !== '') {
+                $.ajax({
+                    url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                    headers: {
+                        'Authorization': `token ${token}`
+                    },
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        const content = atob(data.content);
+                        const sentences = content.split('\n');
+                        sentences.push(sentence);
+                        const updatedContent = sentences.join('\n');
+                        const encodedContent = btoa(updatedContent);
+                        const sha = data.sha;
+
+                        $.ajax({
+                            url: `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                            headers: {
+                                'Authorization': `token ${token}`
+                            },
+                            method: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                message: 'Add sentence',
+                                content: encodedContent,
+                                sha: sha,
+                                branch: branch
+                            }),
+                            success: function() {
+                                $('#sentenceList').append(`<li>${sentence}</li>`);
+                                $('#sentenceInput').val('');
+                            }
+                        });
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
