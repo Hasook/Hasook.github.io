@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <title>抽卡模拟器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .button:hover {
+            background-color: #45a049;
+        }
+        
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .backpack {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+        
+        .backpack h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .backpack .draw-count {
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .backpack ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .backpack li {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .backpack .item-name {
+            flex-grow: 1;
+        }
+        
+        .backpack .item-count {
+            margin-left: 10px;
+            color: #888;
+        }
+        
+        .count-text {
+            font-size: 14px;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .return-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ccc;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            float: right;
+        }
+
+        .return-button:hover {
+            background-color: #999;
+        }
+
+        .probability-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            float: right;
+            margin-right: 10px;
+        }
+
+        .probability-button:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+
+            margin-bottom: 10px;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>抽卡模拟器</h1>
+        <div>
+            <a class="button" href="#" onclick="singleDraw()">单抽</a>
+            <a class="button" href="#" onclick="multiDraw()">十连抽</a>
+            <a class="button" href="#" onclick="toggleBackpack()">背包</a>
+            <a class="return-button" href="index.html">返回</a>
+            <a class="probability-button" href="#" onclick="showProbability()">概率公示</a>
+			<a class="button" href="#" onclick="resetDraw()">重置</a>
+        </div>
+        <div class="result">
+            <p id="resultText"></p>
+            <p class="count-text" id="countText"></p>
+        </div>
+    </div>
+
+    <div class="backpack" id="backpack" style="display: none;">
+        <h2>背包</h2>
+        <ul id="backpackList"></ul>
+    </div>
+
+    <div id="probabilityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProbabilityModal()">&times;</span>
+            <div class="modal-header">
+                <h2>概率公示</h2>
+            </div>
+            <div class="modal-body">
+                <p>SSR：5%</p>
+				<p>电击枪</p>
+                <p>SR：15%</p>
+				<p>波波蛋</p>
+                <p>R：80%</p>
+				<p>黑魂、乌孑、阿猫、水壶、浪仔、艾尔、薏米、年子、蓝冰。</p>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var backpack = [];
+        var drawCount = 0;
+
+        function singleDraw() {
+            drawCount += 1;
+            document.getElementById("countText").textContent = "共抽" + drawCount + "次";
+            var prizes = [
+                { name: "黑魂", rarity: "R" },
+                { name: "乌孑", rarity: "R" },
+                { name: "阿猫", rarity: "R" },
+                { name: "水壶", rarity: "R" },
+				{ name: "浪仔", rarity: "R" },
+				{ name: "艾尔", rarity: "R" },
+				{ name: "薏米", rarity: "R" },
+				{ name: "年子", rarity: "R" },
+				{ name: "蓝冰", rarity: "R" },
+				{ name: "波波蛋", rarity: "SR" },
+                { name: "电击枪", rarity: "SSR" }
+            ];
+            var prize = drawPrize(prizes);
+            document.getElementById("resultText").textContent = prize.name;
+            addToBackpack(prize.name);
+            refreshBackpack();
+        }
+
+        function multiDraw() {
+            drawCount += 10;
+            document.getElementById("countText").textContent = "共抽" + drawCount + "次";
+            var prizes = [
+                { name: "黑魂", rarity: "R" },
+                { name: "乌孑", rarity: "R" },
+                { name: "阿猫", rarity: "R" },
+                { name: "水壶", rarity: "R" },
+				{ name: "浪仔", rarity: "R" },
+				{ name: "艾尔", rarity: "R" },
+				{ name: "薏米", rarity: "R" },
+				{ name: "年子", rarity: "R" },
+				{ name: "蓝冰", rarity: "R" },
+				{ name: "波波蛋", rarity: "SR" },
+                { name: "电击枪", rarity: "SSR" }
+            ];
+            var result = "";
+            for (var i = 0; i < 10; i++) {
+                var prize = drawPrize(prizes);
+                result += prize.name + " ";
+                addToBackpack(prize.name);
+                if ((i + 1) % 5 === 0) {
+                    result += "<br>";
+                }
+            }
+            document.getElementById("resultText").innerHTML = result;
+            refreshBackpack();
+        }
+
+        function drawPrize(prizes) {
+            var totalWeight = prizes.reduce((sum, prize) => sum + getWeight(prize.rarity), 0);
+            var random = Math.random() * totalWeight;
+            var weightSum = 0;
+            for (var i = 0; i < prizes.length; i++) {
+                weightSum += getWeight(prizes[i].rarity);
+                if (random <= weightSum) {
+                    return prizes[i];
+                }
+            }
+        }
+
+        function getWeight(rarity) {
+            switch (rarity) {
+                case "SSR":
+                    return 5;
+                case "SR":
+                    return 15;
+                case "R":
+                    return 80;
+                default:
+                    return 0;
+            }
+        }
+
+        function addToBackpack(prize) {
+            var index = backpack.findIndex(item => item.name === prize);
+            if (index !== -1) {
+                backpack[index].count++;
+            } else {
+                backpack.push({ name: prize, count: 1 });
+            }
+        }
+
+        function toggleBackpack() {
+            var backpackElement = document.getElementById("backpack");
+            if (backpackElement.style.display === "none") {
+                backpackElement.style.display = "block";
+                refreshBackpack();
+            } else {
+                backpackElement.style.display = "none";
+            }
+        }
+
+        function refreshBackpack() {
+            var backpackList = document.getElementById("backpackList");
+            backpackList.innerHTML = "";
+            backpack.forEach(item => {
+                var li = document.createElement("li");
+                li.innerHTML = '<span class="item-name">' + item.name + '</span><span class="item-count">×' + item.count + '</span>';
+                backpackList.appendChild(li);
+            });
+        }
+
+        function showProbability() {
+            var modal = document.getElementById("probabilityModal");
+            modal.style.display = "block";
+        }
+
+        function closeProbabilityModal() {
+            var modal = document.getElementById("probabilityModal");
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById("probabilityModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+		function resetDraw() {
+            backpack = []; // 重置奖品列表
+            drawCount = 0; // 重置抽奖次数
+            document.getElementById("countText").textContent = "共抽" + drawCount + "次";
+            document.getElementById("resultText").textContent = "";
+            refreshBackpack(); // 刷新背包
+        }
+		function toggleBackpack() {
+            var backpackElement = document.getElementById("backpack");
+            if (backpackElement.style.display === "none") {
+                backpackElement.style.display = "block";
+                refreshBackpack();
+            } else {
+                backpackElement.style.display = "none";
+            }
+        }
+
+        function refreshBackpack() {
+            var backpackList = document.getElementById("backpackList");
+            backpackList.innerHTML = "";
+            if (backpack.length === 0) {
+                var emptyMessage = document.createElement("li");
+                emptyMessage.textContent = "空空的。";
+                backpackList.appendChild(emptyMessage);
+            } else {
+                backpack.forEach(item => {
+                    var li = document.createElement("li");
+                    li.innerHTML = '<span class="item-name">' + item.name + '</span><span class="item-count">×' + item.count + '</span>';
+                    backpackList.appendChild(li);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>养殖场博物馆</title>
+  <style>
+	#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+#back-to-top.show {
+  display: block;
+}
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f2f2f2;
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .search-box {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .search-box input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    
+    .search-box button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    .card {
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .card p {
+      margin-bottom: 0;
+      color: #666;
+	  text-indent: 2em;
+    }
+    
+    .tag-container {
+      margin-top: 10px;
+    }
+    
+    .tag {
+      display: inline-block;
+      background-color: #f2f2f2;
+      color: #666;
+      padding: 5px 10px;
+      border-radius: 3px;
+      margin-right: 5px;
+      font-size: 14px;
+	  user-select: none;
+	  cursor: pointer;
+    }
+    
+    .tag.active {
+      background-color: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>梗句</h1>
+    
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="搜索...">
+      <button onclick="search()">搜索</button>
+    </div>
+    
+    <div id="tags-container" class="tag-container">
+      <span class="tag active" onclick="filterByTag(null)" data-tag="全部" id="all-tag">全部</span>
+	  <span class="tag" onclick="filterByTag('名言')" data-tag="名言">名言</span>
+      <span class="tag" onclick="filterByTag('逆天')" data-tag="逆天">逆天</span>
+      <span class="tag" onclick="filterByTag('弱智')" data-tag="弱智">弱智</span>
+      <span class="tag" onclick="filterByTag('戒赌')" data-tag="戒赌">戒赌</span>
+      <!-- 添加更多标签 -->
+    </div>
+    
+    <div id="cards-container">
+      <!-- 这里将动态生成文案卡片 -->
+    </div>
+  </div>
+  
+  <script>
+	window.onscroll = function() {
+  var backToTopButton = document.getElementById("back-to-top");
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    backToTopButton.classList.add("show");
+  } else {
+    backToTopButton.classList.remove("show");
+  }
+};
+
+function scrollToTop() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}
+    var data = [
+      {
+        title: "“我是你妈！” “你妈死了！”",
+        content: "起源于阿猫女士在打起床战争的时候在短短三秒内说出的自尽语句，这两句话是在包含太多信息量因此被后人记录下来。",
+        tags: ["名言","逆天","弱智"]
+      },
+      {
+        title: "赛马场",
+        content: "养殖场人N年一度的赛马比赛，群内上下都跟疯了一样疯狂押注和扰乱赛场。",
+        tags: ["弱智"]
+      },
+	  {
+        title: "“嫁给我，嫁给我，我的jb会旋转！”",
+        content: "最早出现于一段土味视频，而后被人反复提起，用于表达对某人或某个角色的爱意。",
+        tags: ["名言","逆天","弱智"]
+      },
+	  {
+        title: "赌怪骰子",
+        content: "养殖场烂梗出处最多的QQ自带表情骰子，其出现的梗包括但不限于：\n\u3000\u30001.“我根本赢了啊这游戏”：是糯言在丢骰子时连续丢出六点说出的嘲讽语句，因为语气过贱被人反复模仿。\n\u3000\u30002.“投到x就xxxx”：最初出自黑魂“投个3死个马”而后扔出的骰子点数正好为3。\n\u3000\u30003.“看我给大家扔个6”：出自黑魂，在说出这话后，其扔出的骰子点数为1。\n\u3000\u30004.跟随复制！：出自可乐，源于其过年真心话大冒险赌怪环节在谁之后丢出骰子就与谁的点数相同",
+        tags: ["名言","逆天","弱智","戒赌"]
+      },
+	  {
+        title: "死亡茶绘",
+        content: "名场面产生地，包括但不限于：\n\u3000\u30001.勾八会：黑魂在整张画布所有能画的地方画满了勾八，如“七彩勾八”“忍者神勾八”等。\n\u3000\u30002.七暖拔头手书/无头糯言/村口拐卖小姑娘的年子哥：BV1nt41117DX。\n\u3000\u30003.茶绘起床战争。",
+        tags: ["逆天"]
+      },
+	  {
+        title: "电击枪",
+        content: "原本是hypixel僵尸末日中的一把武器，其拥有强大的群攻能力以及其只能通过抽取一千块的箱子获得。在一次四人队（黑魂、糯言、七暖、年子）游戏中，黑魂每次想要电击枪都出暴棍（钻石斧头），次数之多时间之长以至于队友都出了电击枪而只有他没出，成梗以此纪念。",
+        tags: ["戒赌","弱智"]
+      },
+	  {
+        title: "卖房战争",
+        content: "年子的起床战争实况，将杀人说作卖房。实况BV号：BV1Ab41147DN、BV1W441157F7。",
+        tags: ["弱智"]
+      },
+	  {
+        title: "花洒/马桶水",
+        content: "来自于魔王集会企划糯言的人设：“可以随意变成别的东西”。",
+        tags: ["弱智"]
+      },
+	  {
+        title: "男同养殖场/养弯场",
+        content: "群主带头跟男性群员击剑的故事。",
+        tags: ["弱智","逆天"]
+      },
+	  {
+        title: "错字梗",
+        content: "1.“乱七暴躁”：来自年子，原词是“乱七八糟”。 \n\u3000\u30002.“阿猫人头落泪”：来自幽子，原句是“阿猫人头落地”。",
+        tags: ["弱智"]
+      },
+	  {
+        title: "装油",
+        content: "来自艾尔，起因是在l4d2中前两张装油地图，四人组被虐得体无完肤，以至于艾尔做梦时都梦见自己在装油，形成了装油ptsd。",
+        tags: ["弱智"]
+      },
+	  {
+        title: "“我太能溜了，先死一个我”",
+        content: "出自可乐密室杀手，是其对自己上一局溜杀手两分钟，下一局秒死的情况的总结性话语。",
+        tags: ["名言","弱智"]
+      },
+	  {
+        title: "面朝",
+        content: "聊天时开玩笑出现的朝代，皇帝是万俟面（就是糯言先生的第二个圈名）。",
+        tags: ["弱智"]
+      },
+      // 添加更多文案数据...
+    ];
+    
+    function init() {
+      var container = document.getElementById("cards-container");
+      container.innerHTML = "";
+      
+      for (var i = 0; i < data.length; i++) {
+        var card = createCard(data[i]);
+        container.appendChild(card);
+      }
+    }
+    
+    function createCard(cardData) {
+      var card = document.createElement("div");
+      card.className = "card";
+      
+      var title = document.createElement("h2");
+      title.innerText = cardData.title;
+      
+      var content = document.createElement("p");
+      content.innerText = cardData.content;
+      
+      var tags = document.createElement("div");
+      tags.className = "tag-container";
+      for (var i = 0; i < cardData.tags.length; i++) {
+        var tag = document.createElement("span");
+        tag.className = "tag";
+        tag.innerText = cardData.tags[i];
+        tags.appendChild(tag);
+      }
+      
+      card.appendChild(title);
+      card.appendChild(content);
+      card.appendChild(tags);
+      
+      return card;
+    }
+    
+    function search() {
+      var searchInput = document.getElementById("search-input");
+      var searchTerm = searchInput.value.toLowerCase();
+      
+      var filteredData = data.filter(function(cardData) {
+        return cardData.title.toLowerCase().includes(searchTerm) ||
+               cardData.content.toLowerCase().includes(searchTerm) ||
+               cardData.tags.some(function(tag) {
+                 return tag.toLowerCase().includes(searchTerm);
+               });
+      });
+      
+      var container = document.getElementById("cards-container");
+      container.innerHTML = "";
+      
+      for (var i = 0; i < filteredData.length; i++) {
+        var card = createCard(filteredData[i]);
+        container.appendChild(card);
+      }
+    }
+    
+    function filterByTag(tag) {
+      var tags = document.getElementsByClassName("tag");
+      for (var i = 0; i < tags.length; i++) {
+        tags[i].classList.remove("active");
+      }
+      
+      var filteredData;
+      if (tag) {
+        filteredData = data.filter(function(cardData) {
+          return cardData.tags.includes(tag);
+        });
+        document.getElementById("tags-container").scrollIntoView();
+      } else {
+        filteredData = data;
+        document.getElementById("all-tag").classList.add("active");
+      }
+      
+      var container = document.getElementById("cards-container");
+      container.innerHTML = "";
+      
+      for (var i = 0; i < filteredData.length; i++) {
+        var card = createCard(filteredData[i]);
+        container.appendChild(card);
+      }
+      
+      if (tag) {
+        var activeTag = document.querySelector(".tag[data-tag='" + tag + "']");
+        activeTag.classList.add("active");
+      }
+    }
+    
+    init();
+  </script>
+ <div id="back-to-top" onclick="scrollToTop()">返回顶部</div>
+</body>
+</html>
