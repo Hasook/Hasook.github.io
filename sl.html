@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .floating-text {
+      position: absolute;
+      opacity: 1;
+      transition: opacity 1s, top 1s, left 1s;
+      user-select: none; /* 禁止文字选择 */
+    }
+  </style>
+</head>
+<body>
+  <script>
+    var clickCount = 0; // 点击计数器
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    document.addEventListener('click', function(event) {
+      clickCount++; // 每次点击计数器加1
+      
+      if (clickCount >= 20) {
+        window.location.href = 'https://www.bilibili.com/video/BV13s411g7rV/?p=11&vd_source=d86856f1e75ade91e2ad025de038f483'; // 当点击次数达到20时跳转到目标网站
+      }
+      
+      var text = document.createElement('div');
+      text.className = 'floating-text';
+      text.style.left = (event.clientX - 10) + 'px'; // 调整文字位置
+      text.style.top = (event.clientY - 10) + 'px'; // 调整文字位置
+      text.innerHTML = '-1s';
+      document.body.appendChild(text);
+      
+      setTimeout(function() {
+        var targetTop = parseInt(text.style.top) - 50; // 调整文字上升速度
+        var targetLeft = getRandomInt(-50, 50); // 随机左右移动
+        text.style.top = targetTop + 'px';
+        text.style.left = (parseInt(text.style.left) + targetLeft) + 'px';
+        text.style.opacity = 0;
+      }, 100);
+      
+      setTimeout(function() {
+        text.remove();
+      }, 1100);
+    });
+  </script>
+</body>
+</html>
