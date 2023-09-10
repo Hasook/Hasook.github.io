@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传说中的宝可梦生成wiki</title>
+    <link rel="icon" href="https://media.52poke.com/wiki/thumb/3/36/132Ditto.png/240px-132Ditto.png" type="image/png">
+    <style>
+        /* 添加一些基本的样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .filter-bar select,
+        .search-input {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            flex: 1;
+        }
+        .filter-bar select:last-child,
+        .search-input {
+            margin-right: 0;
+        }
+        .pokemon-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            display: inline-block;
+            width: 200px;
+            text-align: center;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease;
+            border-radius: 5px;
+        }
+        .pokemon-card:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+        .pokemon-info {
+            margin-top: 10px;
+        }
+        .pokemon-info h2 {
+            margin: 5px 0;
+        }
+        .pokemon-info p {
+            margin: 3px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>传说宝可梦生成Wiki</h1>
+        
+        <!-- 添加搜索功能和筛选功能 -->
+        <div class="filter-bar">
+            <input type="text" id="search" class="search-input" placeholder="搜索宝可梦">
+            <select id="generation" class="filter-input">
+                <option value="all">所有世代</option>
+                <option value="1">第一世代</option>
+                <option value="2">第二世代</option>
+                <option value="3">第三世代</option>
+                <option value="4">第四世代</option>
+                <option value="5">第五世代</option>
+                <option value="6">第六世代</option>
+                <option value="7">第七世代</option>
+                <option value="8">第八世代</option>
+                <!-- 添加其他世代的选项 -->
+            </select>
+            <select id="time" class="filter-input">
+                <option value="any">任意时间</option>
+                <option value="白天">白天</option>
+                <option value="上午">上午</option>
+                <option value="下午">下午</option>
+                <option value="夜晚">夜晚</option>
+                <option value="黎明">黎明</option>
+                <option value="黄昏">黄昏</option>
+                <!-- 添加其他时间选项 -->
+            </select>
+            <select id="level" class="filter-input">
+                <option value="any">任意级别</option>
+                <option value="一级神">传说宝可梦（一级）</option>
+                <option value="二级神">传说宝可梦（二级）</option>
+				<option value="幻兽">幻之宝可梦</option>
+                <option value="究极异兽">究极异兽</option>
+                <!-- 添加其他级别选项 -->
+            </select>
+            <select id="location" class="filter-input">
+                <option value="any">任意位置</option>
+                <option value="陆地">陆地</option>
+                <option value="地下">地下</option>
+                <option value="水面">水面</option>
+                <option value="水中">水中</option>
+                <option value="空中">空中</option>
+                <option value="树上">树上</option>
+                <option value="进化">进化</option>
+                <option value="other">特殊</option>
+                <!-- 添加其他地点选项 -->
+            </select>
+        </div>
+    
+        <!-- 添加宝可梦列表 -->
+        <div id="pokemon-list">
+            <!-- 宝可梦信息将会在这里显示 -->
+        </div>
+    </div>
+
+    <script>
+        // 以下是一个简单的示例数据，你需要替换成你自己的数据
+        const pokemonData = [
+            {
+                name: "急冻鸟",
+                generation: 1,
+                time: "任意",
+                terrain: ["冰原","冰刺平原","雪山","冷针叶林M"],
+                location: ["寒冽神社"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/4/4e/144Articuno.png/240px-144Articuno.png"
+            },
+            {
+                name: "火焰鸟",
+                generation: 1,
+                time: "任意",
+                terrain: ["平顶山高原","平顶山高原M"],
+                location: ["炽炎神社"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/1/1b/146Moltres.png/240px-146Moltres.png"
+            },
+            {
+                name: "闪电鸟",
+                generation: 1,
+                time: "任意",
+                terrain: ["热带高原","热带平原M","热带高原M"],
+                location: ["雷泣神社"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/e/e3/145Zapdos.png/240px-145Zapdos.png"
+            },
+            {
+                name: "梦幻",
+                generation: 1,
+                time: "白天",
+                terrain: ["丛林M"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/b/b1/151Mew.png/240px-151Mew.png"
+            },
+            {
+                name: "超梦",
+                generation: 1,
+                time: "任意",
+                terrain: ["任意"],
+                location: ["克隆机"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/7/78/150Mewtwo.png/240px-150Mewtwo.png"
+            },
+            {
+                name: "雷公",
+                generation: 2,
+                time: ["黎明","黄昏"],
+                terrain: ["热带草原群系"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/c/c1/243Raikou.png/240px-243Raikou.png"
+            },
+            {
+                name: "炎帝",
+                generation: 2,
+                time: "白天",
+                terrain: ["山地群系"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/f/f9/244Entei.png/240px-244Entei.png"
+            },
+            {
+                name: "水君",
+                generation: 2,
+                time: "夜晚",
+                terrain: ["沙滩群系"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/d/da/245Suicune.png/240px-245Suicune.png"
+            },
+            {
+                name: "洛奇亚",
+                generation: 2,
+                time: ["黄昏"],
+                terrain: ["任意"],
+                location: ["海声铃铛"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/4/44/249Lugia.png/240px-249Lugia.png"
+            },
+            {
+                name: "凤王",
+                generation: 2,
+                time: ["黄昏"],
+                terrain: ["任意"],
+                location: ["透明铃铛"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/6/67/250Ho-Oh.png/240px-250Ho-Oh.png"
+            },
+            {
+                name: "时拉比",
+                generation: 2,
+                time: ["任意"],
+                terrain: ["森林群系"],
+                location: ["桐树林祠堂"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/e/e7/251Celebi.png/240px-251Celebi.png"
+            },
+            {
+                name: "雷吉洛克",
+                generation: 3,
+                time: ["下午"],
+                terrain: ["平顶山群系"],
+                location: ["Y≤50的地下"],
+                rarity: "3.0",
+                image: "https://media.52poke.com/wiki/thumb/a/aa/377Regirock.png/240px-377Regirock.png"
+            },
+            {
+                name: "雷吉艾斯",
+                generation: 3,
+                time: ["上午"],
+                terrain: ["寒冷群系"],
+                location: ["Y≤50的地下"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/f/fe/378Regice.png/240px-378Regice.png"
+            },
+            {
+                name: "雷吉斯奇鲁",
+                generation: 3,
+                time: ["黎明","黄昏"],
+                terrain: ["山地群系"],
+                location: ["Y≤50的地下"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/2/22/379Registeel.png/240px-379Registeel.png"
+            },
+            {
+                name: "拉帝亚斯",
+                generation: 3,
+                time: ["上午"],
+                terrain: ["海洋"],
+                location: ["空中"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/2/24/380Latias.png/240px-380Latias.png"
+            },
+            {
+                name: "拉帝欧斯",
+                generation: 3,
+                time: ["下午"],
+                terrain: ["海洋"],
+                location: ["空中"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/5/52/381Latios.png/240px-381Latios.png"
+            },
+            {
+                name: "盖欧卡",
+                generation: 3,
+                time: "夜晚（雨天）",
+                terrain: ["海洋（深海）"],
+                location: ["水中"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/4/41/382Kyogre.png/240px-382Kyogre.png"
+            },
+            {
+                name: "固拉多",
+                generation: 3,
+                time: "白天（晴天）",
+                terrain: ["沙漠（山丘）"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/7/70/383Groudon.png/240px-383Groudon.png"
+            },
+            {
+                name: "烈空坐",
+                generation: 3,
+                time: ["黎明","黄昏(1.16.5)"],
+                terrain: ["山地群系"],
+                location: ["空中"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/e/e4/384Rayquaza.png/240px-384Rayquaza.png"
+            },
+            {
+                name: "基拉祈",
+                generation: 3,
+                time: ["黎明","黄昏"],
+                terrain: ["峭壁+M"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/8/85/385Jirachi.png/240px-385Jirachi.png"
+            },
+            {
+                name: "代欧奇希斯",
+                generation: 3,
+                time: ["上午"],
+                terrain: ["末地","冷针叶林M"],
+                location: ["空中"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/e/e7/386Deoxys.png/240px-386Deoxys.png"
+            },
+            {
+                name: "帝牙卢卡",
+                generation: 4,
+                time: ["任意"],
+                terrain: ["峭壁","峭壁+","峭壁M","峭壁+M","峭壁边缘","雪山"],
+                location: ["时空祭坛"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/8/8a/483Dialga.png/240px-483Dialga.png"
+            },
+            {
+                name: "帕路奇犽",
+                generation: 4,
+                time: ["任意"],
+                terrain: ["峭壁","峭壁+","峭壁M","峭壁+M","峭壁边缘","雪山"],
+                location: ["时空祭坛"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/6/66/484Palkia.png/240px-484Palkia.png"
+            },
+            {
+                name: "骑拉帝纳",
+                generation: 4,
+                time: ["任意"],
+                terrain: ["峭壁","峭壁+","峭壁M","峭壁+M","峭壁边缘","雪山"],
+                location: ["时空祭坛"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/0/0b/487Giratina.png/240px-487Giratina.png"
+            },
+            {
+                name: "阿尔宙斯",
+                generation: 4,
+                time: ["任意"],
+                terrain: ["峭壁","峭壁+","峭壁M","峭壁+M","峭壁边缘","雪山"],
+                location: ["时空祭坛"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/f/fc/493Arceus.png/240px-493Arceus.png"
+            },
+            {
+                name: "由克希",
+                generation: 4,
+                time: ["下午"],
+                terrain: ["黑森林"],
+                location: ["水上"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/e/ef/480Uxie.png/240px-480Uxie.png"
+            },
+            {
+                name: "亚克诺姆",
+                generation: 4,
+                time: ["上午"],
+                terrain: ["森林"],
+                location: ["水上"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/d/d0/482Azelf.png/240px-482Azelf.png"
+            },
+            {
+                name: "艾姆利多",
+                generation: 4,
+                time: ["黎明","黄昏"],
+                terrain: ["白桦森林"],
+                location: ["水上"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/4/40/481Mesprit.png/240px-481Mesprit.png"
+            },
+            {
+                name: "克雷色利亚",
+                generation: 4,
+                time: ["夜晚（满月）"],
+                terrain: ["白桦森林M"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/4/4a/488Cresselia.png/240px-488Cresselia.png"
+            },
+            {
+                name: "达克莱伊",
+                generation: 4,
+                time: ["夜晚（新月）"],
+                terrain: ["黑森林M"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/6/6d/491Darkrai.png/240px-491Darkrai.png"
+            },
+            {
+                name: "玛娜菲",
+                generation: 4,
+                time: ["上午"],
+                terrain: ["海洋（晴天）"],
+                location: ["水下"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/2/2e/490Manaphy.png/240px-490Manaphy.png"
+            },
+            {
+                name: "席多蓝恩",
+                generation: 4,
+                time: ["任意"],
+                terrain: ["平顶山群系","下界"],
+                location: ["Y≤50的地下岩浆附近","下界"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/b/b7/485Heatran.png/240px-485Heatran.png"
+            },
+            {
+                name: "霏欧纳",
+                generation: 4,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["玛娜菲与百变怪进行繁殖获得"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/7/72/489Phione.png/240px-489Phione.png"
+            },
+            {
+                name: "谢米",
+                generation: 4,
+                time: ["上午"],
+                terrain: ["繁花森林"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/6/61/492Shaymin.png/240px-492Shaymin.png"
+            },
+            {
+                name: "雷吉奇卡斯",
+                generation: 4,
+                time: ["黎明","黄昏"],
+                terrain: ["热带草原群系"],
+                location: ["Y≤40的地下"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/a/a1/486Regigigas.png/240px-486Regigigas.png"
+            },
+			{
+                name: "捷克罗姆",
+                generation: 5,
+                time: ["夜晚"],
+                terrain: ["巨型针叶林丘陵"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/8/81/644Zekrom.png/240px-644Zekrom.png"
+            },
+			{
+                name: "莱西拉姆",
+                generation: 5,
+                time: ["白天"],
+                terrain: ["巨型针叶林丘陵"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/8/8d/643Reshiram.png/240px-643Reshiram.png"
+            },
+			{
+                name: "酋雷姆",
+                generation: 5,
+                time: ["黎明","黄昏"],
+                terrain: ["冰刺平原"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/c/c3/646Kyurem.png/240px-646Kyurem.png"
+            },
+			{
+                name: "勾帕路翁",
+                generation: 5,
+                time: ["夜晚"],
+                terrain: ["森林山丘","白桦森林山丘"],
+                location: ["陆地"],
+                rarity: "3.0",
+                image: "https://media.52poke.com/wiki/thumb/6/65/638Cobalion.png/240px-638Cobalion.png"
+            },
+			{
+                name: "代拉基翁",
+                generation: 5,
+                time: ["夜晚"],
+                terrain: ["森林山丘","白桦森林山丘"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/a/ad/639Terrakion.png/240px-639Terrakion.png"
+            },
+			{
+                name: "毕力吉翁",
+                generation: 5,
+                time: ["白天"],
+                terrain: ["森林山丘","白桦森林山丘"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/7/79/640Virizion.png/240px-640Virizion.png"
+            },
+			{
+                name: "凯路迪欧",
+                generation: 5,
+                time: ["白天"],
+                terrain: ["河流"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/5/50/647Keldeo.png/240px-647Keldeo.png"
+            },
+			{
+                name: "雷电云",
+                generation: 5,
+                time: ["上午"],
+                terrain: ["平原","向日葵平原"],
+                location: ["空中"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/b/b8/642Thundurus.png/240px-642Thundurus.png"
+            },
+			{
+                name: "龙卷云",
+                generation: 5,
+                time: ["下午"],
+                terrain: ["平原","向日葵平原"],
+                location: ["空中"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/0/08/641Tornadus.png/240px-641Tornadus.png"
+            },
+			{
+                name: "土地云",
+                generation: 5,
+                time: ["黎明","黄昏"],
+                terrain: ["平顶山高原F","平顶山高原M","平顶山高原FM"],
+                location: ["空中"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/b/bb/645Landorus.png/240px-645Landorus.png"
+            },
+			{
+                name: "比克提尼",
+                generation: 5,
+                time: ["白天晴天"],
+                terrain: ["热带草原群系"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/6/60/494Victini.png/240px-494Victini.png"
+            },
+			{
+                name: "美洛耶塔",
+                generation: 5,
+                time: ["夜晚"],
+                terrain: ["花海群系"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/a/a3/648Meloetta.png/240px-648Meloetta.png"
+            },
+			{
+                name: "盖诺赛克特",
+                generation: 5,
+                time: ["夜晚"],
+                terrain: ["峭壁+"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/4/46/649Genesect.png/240px-649Genesect.png"
+            },
+			{
+                name: "哲尔尼亚斯",
+                generation: 6,
+                time: ["白天"],
+                terrain: ["黑森林"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/1/13/716Xerneas.png/240px-716Xerneas.png"
+            },
+			{
+                name: "伊裴尔塔尔",
+                generation: 6,
+                time: ["夜晚"],
+                terrain: ["针叶林M"],
+                location: ["空中"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/5/54/717Yveltal.png/240px-717Yveltal.png"
+            },
+			{
+                name: "基格尔德",
+                generation: 6,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["重组单元"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/3/3a/718Zygarde.png/240px-718Zygarde.png"
+            },
+			{
+                name: "胡帕",
+                generation: 6,
+                time: ["下午"],
+                terrain: ["末地","干旱群系的沙漠神殿"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/8/87/720Hoopa-Confined.png/240px-720Hoopa-Confined.png"
+            },
+			{
+                name: "波尔凯尼恩",
+                generation: 6,
+                time: ["黎明","黄昏"],
+                terrain: ["沙漠M"],
+                location: ["水面"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/4/44/721Volcanion.png/240px-721Volcanion.png"
+            },
+			{
+                name: "蒂安希",
+                generation: 6,
+                time: ["上午"],
+                terrain: ["究极深海","山地群系"],
+                location: ["Y≤50的地下（山地群系）"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/b/b3/719Diancie.png/600px-719Diancie.png"
+            },
+			{
+                name: "科斯莫古",
+                generation: 7,
+                time: ["黎明","黄昏"],
+                terrain: ["向日葵平原"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/1/17/789Cosmog.png/240px-789Cosmog.png"
+            },
+			{
+                name: "科斯莫姆",
+                generation: 7,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["进化自科斯莫古"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/1/1b/790Cosmoem.png/240px-790Cosmoem.png"
+            },
+			{
+                name: "索尔迦雷欧",
+                generation: 7,
+                time: ["白天"],
+                terrain: ["任意"],
+                location: ["进化自科斯莫姆"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/5/57/791Solgaleo.png/240px-791Solgaleo.png"
+            },
+			{
+                name: "露奈雅拉",
+                generation: 7,
+                time: ["夜晚"],
+                terrain: ["任意"],
+                location: ["进化自科斯莫姆"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/9/9d/792Lunala.png/240px-792Lunala.png"
+            },
+			{
+                name: "奈克洛兹玛",
+                generation: 7,
+                time: ["夜晚"],
+                terrain: ["黑森林"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/4/44/800Necrozma.png/240px-800Necrozma.png"
+            },
+			{
+                name: "卡璞·鸣鸣",
+                generation: 7,
+                time: ["上午"],
+                terrain: ["丛林"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/d/d0/785Tapu_Koko.png/240px-785Tapu_Koko.png"
+            },
+			{
+                name: "卡璞·蝶蝶",
+                generation: 7,
+                time: ["夜晚"],
+                terrain: ["丛林"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/4/4d/786Tapu_Lele.png/240px-786Tapu_Lele.png"
+            },
+			{
+                name: "卡璞·哞哞",
+                generation: 7,
+                time: ["白天"],
+                terrain: ["丛林"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/6/67/787Tapu_Bulu.png/240px-787Tapu_Bulu.png"
+            },
+			{
+                name: "卡璞·鳍鳍",
+                generation: 7,
+                time: ["下午"],
+                terrain: ["丛林"],
+                location: ["水面"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/6/66/788Tapu_Fini.png/240px-788Tapu_Fini.png"
+            },
+			{
+                name: "属性：空",
+                generation: 7,
+                time: ["黎明","黄昏"],
+                terrain: ["丛林边缘"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/f/fd/772Type_Null.png/240px-772Type_Null.png"
+            },
+			{
+                name: "银伴战兽",
+                generation: 7,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["进化自属性：空"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/b/be/773Silvally.png"
+            },
+			{
+                name: "玛机雅娜",
+                generation: 7,
+                time: ["上午"],
+                terrain: ["上午"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/0/0a/801Magearna.png/240px-801Magearna.png"
+            },
+			{
+                name: "玛夏多",
+                generation: 7,
+                time: ["夜晚"],
+                terrain: ["地狱"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/8/89/802Marshadow.png/240px-802Marshadow.png"
+            },
+			{
+                name: "捷拉奥拉",
+                generation: 7,
+                time: ["下午"],
+                terrain: ["热带高原M"],
+                location: ["陆地"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/a/a7/807Zeraora.png/240px-807Zeraora.png"
+            },
+			{
+                name: "美录坦",
+                generation: 7,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["从熔炉内取出冶炼后的金属锭时有概率生成"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/d/d1/808Meltan.png/240px-808Meltan.png"
+            },
+			{
+                name: "美录梅塔",
+                generation: 7,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["进化自美录坦"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/e/ea/809Melmetal.png/240px-809Melmetal.png"
+            },
+			{
+                name: "苍响",
+                generation: 8,
+                time: ["白天"],
+                terrain: ["森林"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/c/ca/888Zacian.png/240px-888Zacian.png"
+            },
+			{
+                name: "藏玛然特",
+                generation: 8,
+                time: ["夜晚"],
+                terrain: ["森林"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/7/72/889Zamazenta.png/240px-889Zamazenta.png"
+            },
+			{
+                name: "无极汰那",
+                generation: 8,
+                time: ["黎明","黄昏"],
+                terrain: ["末地","沼泽群系"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/6/62/890Eternatus.png"
+            },
+			{
+                name: "熊徒弟",
+                generation: 8,
+                time: ["下午"],
+                terrain: ["黑森林"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/4/47/891Kubfu.png/240px-891Kubfu.png"
+            },
+			{
+                name: "武道熊师",
+                generation: 8,
+                time: ["任意"],
+                terrain: ["任意"],
+                location: ["进化自熊徒弟"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/e/e7/892Urshifu-Single_Strike.png/240px-892Urshifu-Single_Strike.png"
+            },
+			{
+                name: "萨戮德",
+                generation: 8,
+                time: ["夜晚"],
+                terrain: ["丛林群系"],
+                location: ["树上"],
+                level: "幻兽",
+                image: "https://media.52poke.com/wiki/thumb/a/a5/893Zarude.png/240px-893Zarude.png"
+            },
+			{
+                name: "蕾冠王",
+                generation: 8,
+                time: ["上午"],
+                terrain: ["寒冷针叶林","寒冷针叶林山丘","寒冷针叶林山丘"],
+                location: ["陆地"],
+                level: "一级神",
+                image: "https://media.52poke.com/wiki/thumb/3/3c/898Calyrex.png/240px-898Calyrex.png"
+            },
+			{
+                name: "雪暴马",
+                generation: 8,
+                time: ["白天"],
+                terrain: ["雪原"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/f/ff/896Glastrier.png/240px-896Glastrier.png"
+            },
+			{
+                name: "灵幽马",
+                generation: 8,
+                time: ["夜晚"],
+                terrain: ["沼泽"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/7/7e/897Spectrier.png/240px-897Spectrier.png"
+            },
+			{
+                name: "雷吉艾勒奇",
+                generation: 8,
+                time: ["下午"],
+                terrain: ["末地（末地城）"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/9/9b/894Regieleki.png/240px-894Regieleki.png"
+            },
+			{
+                name: "雷吉铎拉戈",
+                generation: 8,
+                time: ["白天"],
+                terrain: ["下界（下界堡垒）"],
+                location: ["陆地"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/thumb/e/e8/895Regidrago.png/240px-895Regidrago.png"
+            },
+			{
+                name: "眷恋云",
+                generation: 8,
+                time: ["上午（雨天）"],
+                terrain: ["花海"],
+                location: ["空中"],
+                level: "二级神",
+                image: "https://media.52poke.com/wiki/b/bf/905Enamorus.png"
+            },
+            // 添加更多宝可梦的信息
+        ];
+
+        function renderPokemonList(data) {
+            const pokemonList = document.getElementById('pokemon-list');
+            pokemonList.innerHTML = '';
+
+            data.forEach(pokemon => {
+                const card = document.createElement('div');
+                card.classList.add('pokemon-card');
+
+                card.innerHTML = `
+                    <img src="${pokemon.image}" alt="${pokemon.name}">
+                    <div class="pokemon-info">
+                        <h2>${pokemon.name}</h2>
+                        <p>世代： 第${pokemon.generation}世代</p>
+                        <p>时间： ${pokemon.time}</p>
+                        <p>地形： ${pokemon.terrain}</p>
+                        <p>位置： ${pokemon.location.join(', ')}</p>
+                    </div>
+                `;
+
+                pokemonList.appendChild(card);
+            });
+        }
+
+        function filterPokemon() {
+            const generation = document.getElementById('generation').value;
+            const time = document.getElementById('time').value;
+            const level = document.getElementById('level').value;
+            const location = document.getElementById('location').value;
+
+            let filteredPokemon = pokemonData;
+
+            if (generation !== 'all') {
+                filteredPokemon = filteredPokemon.filter(pokemon => pokemon.generation === parseInt(generation));
+            }
+
+            if (time !== 'any') {
+                filteredPokemon = filteredPokemon.filter(pokemon => pokemon.time.includes(time));
+            }
+
+            if (level !== 'any') {
+                filteredPokemon = filteredPokemon.filter(pokemon => pokemon.level === level);
+            }
+
+            if (location !== 'any') {
+                if (location === 'other') {
+                    const includedLocations = ["神社","克隆","铃铛","时空祭坛","繁殖"];
+                    filteredPokemon = filteredPokemon.filter(pokemon => pokemon.location.some(t => includedLocations.some(tag => t.includes(tag))));
+                } else {
+                    filteredPokemon = filteredPokemon.filter(pokemon => pokemon.location.some(t => t.includes(location)));
+                }
+            }
+
+            renderPokemonList(filteredPokemon);
+        }
+
+        // 初始化页面
+        renderPokemonList(pokemonData);
+
+        // 监听筛选条件的变化
+        const filterInputs = document.querySelectorAll('.filter-input');
+        filterInputs.forEach(input => {
+            input.addEventListener('change', filterPokemon);
+        });
+
+        // 添加搜索功能
+        document.getElementById('search').addEventListener('input', function() {
+            const keyword = this.value.toLowerCase();
+            const filteredPokemon = pokemonData.filter(pokemon => pokemon.name.toLowerCase().includes(keyword));
+            renderPokemonList(filteredPokemon);
+        });
+    </script>
+</body>
+</html>
