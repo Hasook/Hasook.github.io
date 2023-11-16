@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>款式编码</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Style for small screens */
+        @media only screen and (max-width: 600px) {
+            table {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>款式编码</h1>
+
+    <input type="text" id="searchInput" placeholder="搜索手机型号、款式、编码" oninput="searchTable()">
+
+    <table>
+        <thead>
+            <tr>
+                <th>型号</th>
+                <th>款式</th>
+                <th>编码</th>
+                <th>货源</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>vivox100</td>
+                <td>透明气囊壳</td>
+                <td><span class="code" id="vivo1">vivox100_透明气囊</span> <button onclick="copyCode('vivo1')">复制</button></td>
+                <td><a href="https://detail.1688.com/offer/703599917296.html?_t=1700034375049&spm=a2615.7691456.co_0_0_timedown_0_0_0_0_0_0_0000_0.0" target="_blank">深圳市三合胜贸易有限公司</a></td>
+            </tr>
+            <tr>
+                <td>vivox100</td>
+                <td>透明PC硬壳</td>
+                <td><span class="code" id="vivo2">vivox100_透明PC</span> <button onclick="copyCode('vivo2')">复制</button></td>
+                <td><a href="https://detail.1688.com/offer/749273130021.html?spm=a261y.7663282.10811813088311.2.48835101tfkxTQ&sk=consign" target="_blank">东莞市久诚科技有限公司</a></td>
+            </tr>
+            <tr>
+                <td>vivox100</td>
+                <td>二代素皮壳</td>
+                <td><span class="code" id="vivo3">vivox100_二代素皮</span> <button onclick="copyCode('vivo3')">复制</button></td>
+                <td><a href="https://detail.1688.com/offer/749117711451.html?spm=a261y.7663282.10811813088311.2.7f1629eaLpcfDC&sk=consign" target="_blank">深圳市乙丰贸易有限公司</a></td>
+            </tr>
+            <tr>
+                <td>小米14</td>
+                <td>PP壳</td>
+                <td><span class="code" id="xm141">xm14_pp</span> <button onclick="copyCode('xm141')">复制</button></td>
+                <td><a href="https://detail.1688.com/offer/745706143864.html?spm=a261y.7663282.10811813088311.2.64552efd1ur15P&sk=consign" target="_blank">深圳市福田区黑蜻蜓电子商行</a></td>
+            </tr>
+            <!-- 添加更多商品行 -->
+        </tbody>
+    </table>
+
+    <script>
+        function searchTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.querySelector("table");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (var j = 0; j < td.length; j++) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break;
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function copyCode(elementId) {
+            var codeElement = document.getElementById(elementId);
+            var codeText = codeElement.innerText;
+
+            var tempInput = document.createElement("input");
+            tempInput.value = codeText;
+            document.body.appendChild(tempInput);
+
+            tempInput.select();
+            document.execCommand("copy");
+
+            document.body.removeChild(tempInput);
+        }
+    </script>
+
+</body>
+</html>
