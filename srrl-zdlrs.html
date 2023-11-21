@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f8f8f8;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
+
+        td {
+            height: 50px;
+            width: 50px;
+            position: relative;
+        }
+
+        .highlighted {
+            color: #008000; /* 设置深绿色 */
+            font-weight: bold; /* 可选：加粗文本 */
+        }
+
+        .day-number {
+            font-size: 18px;
+        }
+
+        .birthday-names {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #006400
+        }
+
+        #month-year {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #prev, #next {
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #prev:hover, #next:hover {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<h1>日历</h1>
+
+<div id="month-year"></div>
+<div id="prev" onclick="prevMonth()">&#10094; 上个月</div>
+<div id="next" onclick="nextMonth()">下个月 &#10095;</div>
+
+<table id="calendar">
+    <thead>
+        <tr>
+            <th>周日</th>
+            <th>周一</th>
+            <th>周二</th>
+            <th>周三</th>
+            <th>周四</th>
+            <th>周五</th>
+            <th>周六</th>
+        </tr>
+    </thead>
+    <tbody id="calendar-body"></tbody>
+</table>
+
+<script>
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    // 朋友的生日信息
+    const friendsBirthdays = {
+        "晚辞": { month: 1, day: 4 },
+        "老墨": { month: 2, day: 30 },
+        "暮霭": { month: 3, day: 18 },
+        "黑魂(农历)": { month: 4, day: 12 },
+        "小乔": { month: 6, day: 24 },
+        "小改": { month: 6, day: 25 },
+        "小改": { month: 10, day: 11 },
+        // 添加更多朋友的生日
+    };
+
+    showCalendar(currentMonth, currentYear);
+
+    function showCalendar(month, year) {
+        let firstDay = new Date(year, month, 1);
+        let lastDay = new Date(year, month + 1, 0);
+        let daysInMonth = lastDay.getDate();
+
+        let calendarBody = document.getElementById("calendar-body");
+        calendarBody.innerHTML = "";
+
+        document.getElementById("month-year").innerText = `${year}年${month + 1}月`;
+
+        let date = 1;
+        for (let i = 0; i < 6; i++) {
+            let row = document.createElement("tr");
+            for (let j = 0; j < 7; j++) {
+                if (i === 0 && j < firstDay.getDay()) {
+                    let cell = document.createElement("td");
+                    row.appendChild(cell);
+                } else if (date <= daysInMonth) {
+                    let cell = document.createElement("td");
+                    cell.classList.add("day-number");
+                    cell.innerText = date;
+
+                    // 检查当前日期是否有朋友的生日
+                    let birthdayNames = getBirthdayNames(month, date);
+                    if (birthdayNames.length > 0) {
+                        let namesElement = document.createElement("div");
+                        namesElement.classList.add("birthday-names");
+                        namesElement.innerText = birthdayNames.join(", ");
+
+                        cell.appendChild(namesElement);
+                        cell.style.backgroundColor = "#90EE90";
+                    }
+
+                    row.appendChild(cell);
+                    date++;
+                }
+            }
+            calendarBody.appendChild(row);
+        }
+    }
+
+    function getBirthdayNames(month, day) {
+        let names = [];
+        for (let friend in friendsBirthdays) {
+            if (friendsBirthdays.hasOwnProperty(friend)) {
+                let birthday = friendsBirthdays[friend];
+                if (birthday.month === month && birthday.day === day) {
+                    names.push(friend);
+                }
+            }
+        }
+        return names;
+    }
+
+    function prevMonth() {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        showCalendar(currentMonth, currentYear);
+    }
+
+    function nextMonth() {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        showCalendar(currentMonth, currentYear);
+    }
+</script>
+
+</body>
+</html>
