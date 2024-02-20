@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 下载</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .expandable-content {
+            display: none;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .expandable-button {
+            cursor: pointer;
+            color: #666;
+        }
+        .changelog-button {
+            cursor: pointer;
+            color: #666;
+            float: right;
+        }
+    </style>
+    <script>
+        function toggleExpand(id) {
+            var content = document.getElementById(id);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+        function toggleChangelog(id) {
+            var content = document.getElementById(id);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Mod 下载</h2>
+
+    <table>
+        <tr>
+            <th>Mod 名称</th>
+            <th>Mod 版本</th>
+            <th>游戏版本</th>
+            <th>下载链接</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td rowspan="2">【如果附魔给】</td>
+            <td>1.1</td>
+            <td>1.20.1</td>
+            <td><a href="mod_a_latest_version_download_link">点击下载</a></td>
+            <td><span class="changelog-button" onclick="toggleChangelog('modALatestChangelog')">更新日志</span></td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <div id="modALatestChangelog" class="expandable-content">
+                   <h4>新增：</h4>
+                   <p>- 荆棘 的 床（踩或睡在床上会受到伤害）；
+                   <br>- 激流 的 末影珍珠（在水中或下雨时扔得得更远）；
+                   <br>- 效率 的 骨头（立即驯服范围所有内的狼）；
+                   <br>- 绑定诅咒 的 方块（将副手物品名称设为方块的密码）；
+                   <br>- 精准采集 的 剑（将低血量的生物消除并生成头颅）；
+                   <br>- 火焰附加 的 工具（挖掘方块掉落烧制后的物品）。</p>
+                </div>
+<p></p>
+                <span class="expandable-button" onclick="toggleExpand('modAContent')">历史版本</span>
+                <div id="modAContent" class="expandable-content">
+                    <ul>
+                        <li>
+                            <span>1.0 &nbsp;-&nbsp; 1.20.1 &nbsp;-&nbsp; <a href="【如果附魔给】If_Enchanted_With-1.20.1-1.0.0.jar">点击下载</a></span>
+                            <span class="changelog-button" onclick="toggleChangelog('modAV1_0Changelog')">查看更新日志</span>
+                        </li>
+                        <div id="modAV1_0Changelog" class="expandable-content">
+                            <h4>新增：</h4>
+                            <p>- 忠诚 的 TNT（被点燃后会向放置的人移动）；
+                             <br>- 消失诅咒 的 潜影盒（潜影盒被挖下后消失）；
+                             <br>- 冰霜行者 的 船（船在水面上行驶时生成冰）；
+                             <br>- 多重射击 的 雪球、鸡蛋、末影珍珠（增加扔出的弹射物的数量）；
+                             <br>- 时运 的 熔炉（烧制物品时获得更多）。</p>
+                        </div>
+                        <!-- 添加更多历史版本 -->
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+</body>
+</html>
