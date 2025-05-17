@@ -114,6 +114,63 @@
             transition: max-height 0.3s ease-out;
         }
 
+        .detail-content {
+        padding: 1.2rem 0;
+        font-size: 0.95rem;
+        color: #4a5568;
+        line-height: 1.8;
+    }
+
+    .detail-section {
+        margin: 1.2rem 0;
+        padding-left: 1.5rem;
+        border-left: 3px solid #e2e8f0;
+    }
+
+    .detail-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.8rem;
+        padding: 0.8rem 0;
+        list-style: none;
+    }
+
+    .detail-list li {
+        padding: 0.6rem 1rem;
+        background: #f8fafc;
+        border-radius: 6px;
+        position: relative;
+        transition: 0.2s;
+    }
+
+    .detail-list li:hover {
+        background: #f1f5f9;
+        transform: translateX(3px);
+    }
+
+    .formula {
+        font-family: 'Courier New', monospace;
+        background: #2d3748;
+        color: #cbd5e0;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        display: inline-block;
+        margin: 0.5rem 0;
+    }
+
+    .highlight {
+        color: #2b6cb0;
+        font-weight: 600;
+    }
+
+    .note {
+        background: #fff9c4;
+        padding: 1rem;
+        border-radius: 6px;
+        border-left: 4px solid #ffd600;
+        margin: 1rem 0;
+    }
+
         /* 标签样式 */
         .tags-container {
             display: flex;
@@ -219,12 +276,16 @@
                         <td>该物品的掉落物会主动远离主人</td>
                     </tr>
                     <tr>
-                        <td>详细说明</td>
-                        <td>
-                            等级越高，主动远离的生效距离越长 </p>
-                            公式：<code>5 × 等级</code>（单位：米）
-                        </td>
-                    </tr>
+    <td>详细说明</td>
+    <td>
+        <div class="detail-content">
+            <div class="detail-section">
+                <p>等级越高，主动远离的生效距离越长</p>
+                <div class="formula">作用距离 = 5 × 等级（米）</div>
+            </div>
+        </div>
+    </td>
+</tr>
                 </table>
             </div>
         </section>
