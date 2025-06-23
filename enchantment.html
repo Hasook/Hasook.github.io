@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Minecraft 附魔百科全书</title>
+    <title>Hasoook附魔Wiki</title>
+    <link rel="icon" href="https://zh.minecraft.wiki/images/ItemSprite_enchanted-book.png" type="image/x-icon">
     <style>
         * {
             box-sizing: border-box;
@@ -134,10 +135,12 @@
         .tag-treasure { background: #f1c40f; color: #2c3e50; }
         .tag-trident { background: #3498db; color: white; }
         .tag-general { background: #95a5a6; color: white; }
+        .tag-common { background: #95a5a6; color: white; }
         .tag-tool { background: #95a5a6; color: white; }
         .tag-armor { background: #27ae60; color: white; }
         .tag-weapon { background: #9b59b6; color: white; }
         .tag-bow { background: #9b59b6; color: white; }
+        .tag-elytra { background: #9b59b6; color: white; }
 
         /* 详细信息表格 */
         .detail-table {
@@ -209,6 +212,60 @@
 
         .arrow.down {
             transform: rotate(180deg);
+        }
+
+        /* 图标样式 */
+        .item-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            padding: 0.8rem 0;
+            align-items: flex-start;
+        }
+
+        .item-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .item-image {
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        /* 文字标签样式 */
+        .item-label {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #475569;
+            background: rgba(255,255,255,0.95);
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* 悬停效果 */
+        .item-icon:hover {
+            transform: translateY(-2px);
+        }
+        .item-icon:hover .item-label {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
@@ -342,7 +399,12 @@
                     </tr>
                     <tr>
                         <td>适用物品</td>
-                        <td>弓</td>
+                        <td><div class="item-grid">
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Bow_JE2_BE1.png" class="item-image" alt="弓">
+                                <span class="item-label">弓</span>
+                            </div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td>效果描述</td>
@@ -360,7 +422,7 @@
                                         <li>TNT</li>
                                         <li>雪球</li>
                                         <li>鸡蛋</li>
-                                        <li>口水</li>
+                                        <li>羊驼口水</li>
                                         <li>潜影弹</li>
                                         <li>龙息弹</li>
                                         <li>火球</li>
@@ -416,7 +478,210 @@
                             <div class="detail-description">
                                 <div class="description-block">
                                     <span class="highlight">条件：</span>
-                                    仅限目标主手位置没有物品时<br>
+                                    仅限攻击目标主手位置没有物品时<br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="enchantment" data-category="curse" data-name="种族歧视">
+            <div class="enchantment-header">
+                <div>
+                    <h2 class="enchantment-title">种族歧视</h2>
+                    <div class="tags-container">
+                        <span class="tag tag-curse">诅咒</span>
+                    </div>
+                </div>
+                <svg class="arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+            <div class="enchantment-details">
+                <table class="detail-table">
+                    <tr>
+                        <td>附魔ID</td>
+                        <td>hasoook:racial_discrimination</td>
+                    </tr>
+                    <tr>
+                        <td>最高等级</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>适用物品</td>
+                        <td><div class="item-grid">
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Iron_Sword_JE2_BE2.png" class="item-image" alt="剑">
+                                <span class="item-label">剑</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Iron_Axe_JE5_BE2.png" class="item-image" alt="斧">
+                                <span class="item-label">斧</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Bow_JE2_BE1.png" class="item-image" alt="弓">
+                                <span class="item-label">弓</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Mace_JE1_BE1.png" class="item-image" alt="重锤">
+                                <span class="item-label">重锤</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Lead_JE2_BE2.png" class="item-image" alt="拴绳">
+                                <span class="item-label">拴绳</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Invicon_Chest.png" class="item-image" alt="箱子">
+                                <span class="item-label">箱子</span>
+                            </div>
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td>效果描述</td>
+                        <td>无法选择白色生物为目标，对黑色生物有特攻</td>
+                    </tr>
+                    <tr>
+                        <td>详细说明</td>
+                        <td>
+                            <div class="detail-description">
+                                <div class="description-block">
+                                    <span class="highlight">在主手时：</span><br>
+                                    无法对“白色生物”造成伤害<br>
+                                    对“黑色生物”造成伤害时，立即重置其无敌帧，如果附魔物品是“拴绳”，会使其进入工作状态<br>
+                                    看着“白色生物”时，使用物品会无效<br>
+                                    看着“黑色生物”时，立即重置攻击冷却<br>
+                                </div>
+                                <div class="description-block">
+                                    <span class="highlight">在方块实体上时：</span><br>
+                                    被“黑色生物”互动或破坏时，立即进行一次瞬移<br>
+                                </div>
+                                <div class="description-block">
+                                    <span class="highlight">特殊效果：</span><br>
+                                    戴着骷髅头的生物会被视为“白色生物”<br>
+                                    戴着凋零骷髅头的生物会被视为“黑色生物”<br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="enchantment" data-category="curse,general" data-name="中东最好的飞行员">
+            <div class="enchantment-header">
+                <div>
+                    <h2 class="enchantment-title">中东最好的飞行员</h2>
+                    <div class="tags-container">
+                        <span class="tag tag-curse">诅咒</span>
+                        <span class="tag tag-elytra">鞘翅专属</span>
+                    </div>
+                </div>
+                <svg class="arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+            <div class="enchantment-details">
+                <table class="detail-table">
+                    <tr>
+                        <td>附魔ID</td>
+                        <td>hasoook:middle_east_best_pilot</td>
+                    </tr>
+                    <tr>
+                        <td>最高等级</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>适用物品</td>
+                        <td><div class="item-grid">
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Invicon_Elytra.png" class="item-image" alt="鞘翅">
+                                <span class="item-label">鞘翅</span>
+                            </div>
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td>效果描述</td>
+                        <td>
+                            滑翔时碰到两个相同的生物会爆炸
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>详细说明</td>
+                        <td>
+                            <div class="detail-description">
+                                <div class="description-block">
+                                    <span class="highlight">条件：</span>
+                                    半径1格内有2只相同的生物才会触发，小于或多于都不会触发<br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="enchantment" data-category="common" data-name="路易">
+            <div class="enchantment-header">
+                <div>
+                    <h2 class="enchantment-title">路易</h2>
+                    <div class="tags-container">
+                        <span class="tag tag-common">普通</span>
+                    </div>
+                </div>
+                <svg class="arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+            <div class="enchantment-details">
+                <table class="detail-table">
+                    <tr>
+                        <td>附魔ID</td>
+                        <td>hasoook:louis</td>
+                    </tr>
+                    <tr>
+                        <td>最高等级</td>
+                        <td>16</td>
+                    </tr>
+                    <tr>
+                        <td>适用物品</td>
+                        <td><div class="item-grid">
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Invicon_Shears.png" class="item-image" alt="剪刀">
+                                <span class="item-label">剪刀</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Iron_Sword_JE2_BE2.png" class="item-image" alt="剑">
+                                <span class="item-label">剑</span>
+                            </div>
+                            <div class="item-icon">
+                                <img src="https://zh.minecraft.wiki/images/Iron_Axe_JE5_BE2.png" class="item-image" alt="斧">
+                                <span class="item-label">斧</span>
+                            </div>
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td>效果描述</td>
+                        <td>
+                            对着生物使用，将其斩首
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>详细说明</td>
+                        <td>
+                            <div class="detail-description">
+                                <div class="description-block">
+                                    <span class="highlight">条件：</span>
+                                    只有附魔等级等于16时才能触发斩首效果<br>
+                                </div>
+                                <div class="description-block">
+                                    <span class="highlight">特殊效果：</span>
+                                    合成多把"路易"附魔剪刀时，会合成出将"路易"附魔等级相加，其他附魔保留最高等级的剪刀，而非普通剪刀<br>
+                                </div>
+                                <div class="description-block">
+                                    <span class="highlight">笑点解析：</span>
+                                    路易十六<br>
                                 </div>
                             </div>
                         </td>
