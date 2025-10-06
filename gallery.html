@@ -53,6 +53,14 @@
       .image-thumbnail {
         @apply w-full h-full object-cover transition-transform duration-500 hover:scale-110;
       }
+      .like-animation {
+        animation: likePulse 0.5s ease-in-out;
+      }
+      @keyframes likePulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+      }
     }
   </style>
 </head>
@@ -114,7 +122,7 @@
     </div>
   </header>
 
-  <!-- 主内容区 - 增加顶部间距避免被导航栏遮挡 -->
+  <!-- 主内容区 -->
   <main class="container mx-auto px-4 pt-28 md:pt-32 pb-16">
     <!-- 页面标题 -->
     <div class="mb-10 text-center">
@@ -122,13 +130,13 @@
       <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">感谢大家的喜爱与创作，这里收集了所有粉丝绘制的Hasoook人设作品，每一份都是独特的心意。</p>
     </div>
     
-    <!-- 图片过滤和搜索 -->
+    <!-- 排序和搜索 -->
     <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div class="flex flex-wrap gap-2">
-        <button class="filter-btn active px-4 py-2 rounded-full bg-primary text-white text-sm">全部</button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 text-sm hover:bg-primary/10 transition-colors">插画</button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 text-sm hover:bg-primary/10 transition-colors">漫画</button>
-        <button class="filter-btn px-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 text-sm hover:bg-primary/10 transition-colors">Q版</button>
+        <button class="sort-btn active px-4 py-2 rounded-full bg-primary text-white text-sm" data-sort="default">默认排序</button>
+        <button class="sort-btn px-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 text-sm hover:bg-primary/10 transition-colors" data-sort="like-desc">喜欢最多</button>
+        <button class="sort-btn px-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 text-sm hover:bg-primary/10 transition-colors" data-sort="date-desc">最新发布</button>
+        <button class="sort-btn px-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 text-sm hover:bg-primary/10 transition-colors" data-sort="date-asc">最早发布</button>
       </div>
       <div class="relative w-full sm:w-auto">
         <input type="text" placeholder="搜索作品..." class="w-full sm:w-64 pl-10 pr-4 py-2 rounded-full bg-light-300 dark:bg-dark-100 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/50">
@@ -138,141 +146,12 @@
     
     <!-- 粉丝投稿图片网格 -->
     <section id="fanart-gallery" class="gallery-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <!-- 图片项1 - 禁止保存实例 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="插画" data-type="fanart">
-        <div class="image-container aspect-square cursor-pointer" data-id="1" oncontextmenu="return false;" ondragstart="return false;">
-          <img src="D:\图片\图\04e24cac8097b6e1439afebc617b148e233954763.jpg" alt="粉丝绘制的Hasoook插画" class="image-thumbnail" draggable="false">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">夏日Hasoook</h3>
-              <p class="text-sm text-gray-200">by 小画家</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-06-15</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">插画</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 图片项2 - 可保存 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="Q版" data-type="fanart">
-        <div class="image-container aspect-square cursor-pointer" data-id="2">
-          <img src="https://picsum.photos/seed/hasoook2/800/800" alt="粉丝绘制的Hasoook Q版" class="image-thumbnail">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">Q版Hasoook</h3>
-              <p class="text-sm text-gray-200">by 萌萌子</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-06-10</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Q版</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 图片项3 - 可保存 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="漫画" data-type="fanart">
-        <div class="image-container aspect-square cursor-pointer" data-id="3">
-          <img src="https://picsum.photos/seed/hasoook3/800/800" alt="粉丝绘制的Hasoook漫画" class="image-thumbnail">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">Hasoook日常</h3>
-              <p class="text-sm text-gray-200">by 漫画达人</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-06-05</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">漫画</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 图片项4 - 可保存 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="插画" data-type="fanart">
-        <div class="image-container aspect-square cursor-pointer" data-id="4">
-          <img src="https://picsum.photos/seed/hasoook4/800/800" alt="粉丝绘制的Hasoook插画" class="image-thumbnail">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">古风Hasoook</h3>
-              <p class="text-sm text-gray-200">by 古风爱好者</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-05-28</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">插画</span>
-          </div>
-        </div>
-      </div>
+      <!-- 图片项会通过JS动态生成 -->
     </section>
     
     <!-- 官方创作图片网格 (默认隐藏) -->
     <section id="created-gallery" class="gallery-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
-      <!-- 官方创作图片项1 - 禁止保存实例 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="表情" data-type="created">
-        <div class="image-container aspect-square cursor-pointer" data-id="11" oncontextmenu="return false;" ondragstart="return false;">
-          <img src="https://picsum.photos/seed/hasoook11/800/800" alt="Hasoook官方表情" class="image-thumbnail" draggable="false">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">惊讶表情</h3>
-              <p class="text-sm text-gray-200">官方限定</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-06-20</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-secondary/10 text-secondary">表情</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 官方创作图片项2 - 可保存 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="人设" data-type="created">
-        <div class="image-container aspect-square cursor-pointer" data-id="12">
-          <img src="https://picsum.photos/seed/hasoook12/800/800" alt="Hasoook官方人设" class="image-thumbnail">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">夏季人设</h3>
-              <p class="text-sm text-gray-200">官方设定</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-06-18</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-secondary/10 text-secondary">人设</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 官方创作图片项3 - 可保存 -->
-      <div class="gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md" data-category="封面" data-type="created">
-        <div class="image-container aspect-square cursor-pointer" data-id="13">
-          <img src="https://picsum.photos/seed/hasoook13/800/800" alt="Hasoook视频封面" class="image-thumbnail">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-            <div class="p-4 text-white">
-              <h3 class="font-semibold">游戏实况封面</h3>
-              <p class="text-sm text-gray-200">视频专用</p>
-            </div>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-500 dark:text-gray-400">2023-06-12</span>
-            <span class="px-2 py-1 text-xs rounded-full bg-secondary/10 text-secondary">封面</span>
-          </div>
-        </div>
-      </div>
+      <!-- 图片项会通过JS动态生成 -->
     </section>
     
     <!-- 加载更多按钮 -->
@@ -305,7 +184,10 @@
           
           <div class="flex items-center gap-3 mb-6">
             <span id="modal-date" class="px-3 py-1 rounded-full bg-light-300 dark:bg-dark-300 text-sm"></span>
-            <span id="modal-category" class="px-3 py-1 rounded-full text-sm"></span>
+            <span id="modal-like-count" class="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm flex items-center gap-1">
+              <i class="fa fa-heart"></i>
+              <span></span>
+            </span>
           </div>
           
           <div class="mb-6">
@@ -313,13 +195,12 @@
             <p id="modal-description" class="text-gray-700 dark:text-gray-300 leading-relaxed"></p>
           </div>
           
+          <!-- 喜欢功能 -->
           <div class="flex gap-3">
-            <!-- 动态判断是否可保存（根据图片ID） -->
-            <button id="save-btn" class="flex-1 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-              <i class="fa fa-download"></i> 保存图片
-            </button>
-            <button class="flex-1 py-2 rounded-lg bg-light-300 dark:bg-dark-300 hover:bg-gray-300 dark:hover:bg-dark-100 transition-colors flex items-center justify-center gap-2">
-              <i class="fa fa-share-alt"></i> 分享
+            <button id="like-btn" class="flex-1 py-3 rounded-lg bg-light-300 dark:bg-dark-300 hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center gap-2 font-medium">
+              <i id="like-icon" class="fa fa-heart-o text-xl"></i>
+              <span id="like-count-display">0</span>
+              <span>喜欢</span>
             </button>
           </div>
         </div>
@@ -367,77 +248,91 @@
 
   <!-- JavaScript -->
   <script>
-    // 图片数据
+    // 图片数据 - 包含排序所需的属性
     const imageData = {
       1: {
         title: "夏日Hasoook",
         artist: "by 小画家",
         date: "2023-06-15",
-        category: "插画",
         type: "fanart",
-        image: "D:/图片/图/04e24cac8097b6e1439afebc617b148e233954763.jpg",
+        image: "gallery/contribution/1.png",
+        thumbnail: "https://picsum.photos/seed/hasoook1/800/800",
         description: "夏天到了，画了一张Hasoook的夏日海边图，希望大家喜欢！一直很喜欢Hasoook的视频，每次看都觉得很开心，这是我第一次投稿，希望能被看到~",
-        allowSave: false // 禁止保存
+        allowSave: false,
+        likeCount: 128,
+        isLiked: false
       },
       2: {
         title: "Q版Hasoook",
         artist: "by 萌萌子",
         date: "2023-06-10",
-        category: "Q版",
         type: "fanart",
         image: "https://picsum.photos/seed/hasoook2/1200/1200",
+        thumbnail: "https://picsum.photos/seed/hasoook2/800/800",
         description: "画了Q版的Hasoook，太可爱了！尝试了新的绘画风格，希望大家喜欢。Hasoook的每个表情都很有特点，特别适合Q版化~",
-        allowSave: true // 允许保存
+        allowSave: true,
+        likeCount: 95,
+        isLiked: false
       },
       3: {
         title: "Hasoook日常",
         artist: "by 漫画达人",
         date: "2023-06-05",
-        category: "漫画",
         type: "fanart",
         image: "https://picsum.photos/seed/hasoook3/1200/1200",
+        thumbnail: "https://picsum.photos/seed/hasoook3/800/800",
         description: "根据Hasoook视频里的一些小日常改编的四格漫画，希望能捕捉到那种轻松愉快的氛围。画漫画真的很有趣，以后还会继续创作更多~",
-        allowSave: true
+        allowSave: true,
+        likeCount: 203,
+        isLiked: false
       },
       4: {
         title: "古风Hasoook",
         artist: "by 古风爱好者",
         date: "2023-05-28",
-        category: "插画",
         type: "fanart",
         image: "https://picsum.photos/seed/hasoook4/1200/1200",
+        thumbnail: "https://picsum.photos/seed/hasoook4/800/800",
         description: "突发奇想画了古风版本的Hasoook，感觉意外地合适呢！参考了一些古风服饰和背景，希望能展现出不一样的气质。",
-        allowSave: true
+        allowSave: true,
+        likeCount: 156,
+        isLiked: false
       },
       11: {
         title: "惊讶表情",
         artist: "官方限定",
         date: "2023-06-20",
-        category: "表情",
         type: "created",
         image: "https://picsum.photos/seed/hasoook11/1200/1200",
+        thumbnail: "https://picsum.photos/seed/hasoook11/800/800",
         description: "官方定制的惊讶表情，将在后续视频中使用。特别感谢画手大大@XXX的创作，完美捕捉了想要表达的情绪。",
-        allowSave: false // 禁止保存
+        allowSave: false,
+        likeCount: 342,
+        isLiked: false
       },
       12: {
         title: "夏季人设",
         artist: "官方设定",
         date: "2023-06-18",
-        category: "人设",
         type: "created",
         image: "https://picsum.photos/seed/hasoook12/1200/1200",
+        thumbnail: "https://picsum.photos/seed/hasoook12/800/800",
         description: "2023夏季新版人设，更新了服装和一些细节设计，希望能给大家带来新鲜感。这套设计更轻便适合夏季主题的视频内容。",
-        allowSave: true
+        allowSave: true,
+        likeCount: 512,
+        isLiked: false
       },
       13: {
         title: "游戏实况封面",
         artist: "视频专用",
         date: "2023-06-12",
-        category: "封面",
         type: "created",
         image: "https://picsum.photos/seed/hasoook13/1200/1200",
+        thumbnail: "https://picsum.photos/seed/hasoook13/800/800",
         description: "新系列游戏实况的专用封面，结合了游戏元素和个人形象设计。后续会根据游戏进度推出更多版本的封面图。",
-        allowSave: true
+        allowSave: true,
+        likeCount: 278,
+        isLiked: false
       }
     };
     
@@ -459,22 +354,226 @@
     const modalTitle = document.getElementById('modal-title');
     const modalArtist = document.getElementById('modal-artist');
     const modalDate = document.getElementById('modal-date');
-    const modalCategory = document.getElementById('modal-category');
+    const modalLikeCount = document.getElementById('modal-like-count').querySelector('span');
     const modalDescription = document.getElementById('modal-description');
     const closeModal = document.getElementById('close-modal');
-    const filterBtns = document.querySelectorAll('.filter-btn');
+    const sortBtns = document.querySelectorAll('.sort-btn');
     const loadMoreBtn = document.getElementById('load-more');
-    const saveBtn = document.getElementById('save-btn');
+    const likeBtn = document.getElementById('like-btn');
+    const likeIcon = document.getElementById('like-icon');
+    const likeCountDisplay = document.getElementById('like-count-display');
     let currentImageId = null; // 当前查看的图片ID
+    let currentSort = 'default'; // 当前排序方式
     
-    // 只对禁止保存的图片区域限制右键
-    document.addEventListener('contextmenu', (e) => {
-      const isProtected = e.target.closest('[oncontextmenu="return false;"]');
-      if (isProtected) {
-        e.preventDefault();
-        return false;
+    // 初始化页面 - 渲染图片
+    function initGallery() {
+      renderGallery('fanart');
+      renderGallery('created');
+    }
+    
+    // 渲染指定类型的画廊
+    function renderGallery(type) {
+      const gallery = type === 'fanart' ? fanartGallery : createdGallery;
+      const items = Object.values(imageData).filter(item => item.type === type);
+      
+      // 先清空画廊
+      gallery.innerHTML = '';
+      
+      // 排序处理
+      const sortedItems = sortItems([...items], currentSort);
+      
+      // 渲染排序后的项目
+      sortedItems.forEach(item => {
+        const isProtected = !item.allowSave;
+        const heartClass = item.isLiked ? 'fa-heart like-animation' : 'fa-heart-o';
+        const colorClass = type === 'fanart' ? 'text-primary' : 'text-secondary';
+        
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md';
+        galleryItem.setAttribute('data-id', item.id);
+        
+        galleryItem.innerHTML = `
+          <div class="image-container aspect-square cursor-pointer" data-id="${item.id}" 
+            ${isProtected ? 'oncontextmenu="return false;" ondragstart="return false;"' : ''}>
+            <img src="${item.thumbnail}" alt="${item.title}" class="image-thumbnail" 
+              ${isProtected ? 'draggable="false"' : ''}>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
+              <div class="p-4 text-white">
+                <h3 class="font-semibold">${item.title}</h3>
+                <p class="text-sm text-gray-200">${item.artist}</p>
+              </div>
+            </div>
+            <!-- 卡片上的喜欢按钮 -->
+            <div class="absolute top-3 right-3 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-white dark:hover:bg-black/70 transition-colors">
+              <i class="fa ${heartClass} ${colorClass}" data-id="${item.id}"></i>
+              <span class="ml-1 text-sm font-medium ${colorClass}" data-id="${item.id}">${item.likeCount}</span>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500 dark:text-gray-400">${item.date}</span>
+              <span class="px-2 py-1 text-xs rounded-full ${type === 'fanart' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}">
+                ${type === 'fanart' ? '粉丝创作' : '官方'}
+              </span>
+            </div>
+          </div>
+        `;
+        
+        gallery.appendChild(galleryItem);
+        
+        // 绑定喜欢按钮事件
+        const heartIcon = galleryItem.querySelector(`.fa-heart, .fa-heart-o`);
+        heartIcon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleLike(item.id);
+        });
+        
+        // 绑定点击查看详情事件
+        const imageContainer = galleryItem.querySelector('.image-container');
+        imageContainer.addEventListener('click', () => {
+          openImageDetail(item.id);
+        });
+      });
+    }
+    
+    // 排序处理函数
+    function sortItems(items, sortType) {
+      // 先给每个item添加id属性（用于排序后保持稳定性）
+      items.forEach(item => {
+        // 找到对应的id
+        const id = Object.keys(imageData).find(key => imageData[key] === item);
+        item.id = id;
+      });
+      
+      switch(sortType) {
+        case 'like-desc':
+          // 按喜欢数量降序
+          return items.sort((a, b) => {
+            if (b.likeCount !== a.likeCount) {
+              return b.likeCount - a.likeCount;
+            }
+            // 数量相同则按ID排序保持稳定
+            return a.id - b.id;
+          });
+          
+        case 'date-desc':
+          // 按日期降序（最新在前）
+          return items.sort((a, b) => {
+            if (b.date !== a.date) {
+              return new Date(b.date) - new Date(a.date);
+            }
+            return a.id - b.id;
+          });
+          
+        case 'date-asc':
+          // 按日期升序（最早在前）
+          return items.sort((a, b) => {
+            if (a.date !== b.date) {
+              return new Date(a.date) - new Date(b.date);
+            }
+            return a.id - b.id;
+          });
+          
+        case 'default':
+        default:
+          // 默认按ID排序
+          return items.sort((a, b) => a.id - b.id);
       }
-    });
+    }
+    
+    // 切换喜欢状态
+    function toggleLike(imageId) {
+      const data = imageData[imageId];
+      if (!data) return;
+      
+      // 切换喜欢状态
+      data.isLiked = !data.isLiked;
+      
+      // 更新喜欢数量
+      data.likeCount += data.isLiked ? 1 : -1;
+      
+      // 更新所有地方的显示
+      updateLikeDisplay(imageId, data);
+    }
+    
+    // 更新喜欢显示
+    function updateLikeDisplay(imageId, data) {
+      // 更新卡片上的显示
+      const cardLikeIcons = document.querySelectorAll(`.image-container [data-id="${imageId}"].fa-heart, .image-container [data-id="${imageId}"].fa-heart-o`);
+      const cardLikeCounts = document.querySelectorAll(`.image-container span[data-id="${imageId}"]`);
+      
+      cardLikeIcons.forEach(icon => {
+        if (data.isLiked) {
+          icon.classList.remove('fa-heart-o');
+          icon.classList.add('fa-heart', 'like-animation');
+        } else {
+          icon.classList.remove('fa-heart', 'like-animation');
+          icon.classList.add('fa-heart-o');
+        }
+      });
+      
+      cardLikeCounts.forEach(countElem => {
+        countElem.textContent = data.likeCount;
+      });
+      
+      // 如果当前在详情页，更新详情页显示
+      if (currentImageId === imageId) {
+        likeCountDisplay.textContent = data.likeCount;
+        modalLikeCount.textContent = data.likeCount;
+        
+        if (data.isLiked) {
+          likeIcon.classList.remove('fa-heart-o');
+          likeIcon.classList.add('fa-heart', 'like-animation');
+        } else {
+          likeIcon.classList.remove('fa-heart', 'like-animation');
+          likeIcon.classList.add('fa-heart-o');
+        }
+      }
+    }
+    
+    // 打开图片详情
+    function openImageDetail(imageId) {
+      currentImageId = imageId;
+      const data = imageData[imageId];
+      
+      if (data) {
+        modalImage.src = data.image;
+        modalImage.alt = data.title;
+        modalTitle.textContent = data.title;
+        modalArtist.textContent = data.artist;
+        modalDate.textContent = data.date;
+        modalLikeCount.textContent = data.likeCount;
+        modalDescription.textContent = data.description;
+        
+        // 更新喜欢按钮状态
+        likeCountDisplay.textContent = data.likeCount;
+        const colorClass = data.type === 'fanart' ? 'text-primary' : 'text-secondary';
+        const hoverClass = data.type === 'fanart' ? 'hover:bg-primary' : 'hover:bg-secondary';
+        
+        if (data.isLiked) {
+          likeIcon.className = `fa fa-heart text-xl ${colorClass} like-animation`;
+          likeBtn.className = `flex-1 py-3 rounded-lg ${data.type === 'fanart' ? 'bg-primary' : 'bg-secondary'} text-white transition-all duration-300 flex items-center justify-center gap-2 font-medium`;
+        } else {
+          likeIcon.className = `fa fa-heart-o text-xl ${colorClass}`;
+          likeBtn.className = `flex-1 py-3 rounded-lg bg-light-300 dark:bg-dark-300 ${hoverClass} hover:text-white transition-all duration-300 flex items-center justify-center gap-2 font-medium`;
+        }
+        
+        // 显示模态框
+        imageModal.classList.remove('opacity-0', 'pointer-events-none');
+        imageModal.querySelector('div').classList.remove('scale-95');
+        imageModal.querySelector('div').classList.add('scale-100');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    // 关闭图片详情
+    function closeImageModal() {
+      imageModal.classList.add('opacity-0', 'pointer-events-none');
+      imageModal.querySelector('div').classList.remove('scale-100');
+      imageModal.querySelector('div').classList.add('scale-95');
+      document.body.style.overflow = '';
+      currentImageId = null;
+    }
     
     // 滚动时导航栏效果
     window.addEventListener('scroll', () => {
@@ -554,88 +653,37 @@
     mobileTabFanart.addEventListener('click', switchToFanart);
     mobileTabCreated.addEventListener('click', switchToCreated);
     
-    // 打开图片详情
-    document.querySelectorAll('.image-container').forEach(container => {
-      container.addEventListener('click', () => {
-        currentImageId = container.getAttribute('data-id');
-        const data = imageData[currentImageId];
+    // 排序按钮事件
+    sortBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 更新按钮状态
+        sortBtns.forEach(b => {
+          b.classList.remove('active', 'bg-primary', 'text-white');
+          b.classList.add('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
+        });
+        btn.classList.add('active', 'bg-primary', 'text-white');
+        btn.classList.remove('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
         
-        if (data) {
-          modalImage.src = data.image;
-          modalImage.alt = data.title;
-          modalTitle.textContent = data.title;
-          modalArtist.textContent = data.artist;
-          modalDate.textContent = data.date;
-          modalCategory.textContent = data.category;
-          modalDescription.textContent = data.description;
-          
-          // 设置分类标签颜色
-          if (data.type === 'fanart') {
-            modalCategory.classList.add('bg-primary/10', 'text-primary');
-            modalCategory.classList.remove('bg-secondary/10', 'text-secondary');
-          } else {
-            modalCategory.classList.add('bg-secondary/10', 'text-secondary');
-            modalCategory.classList.remove('bg-primary/10', 'text-primary');
-          }
-          
-          // 设置保存按钮状态
-          if (data.allowSave) {
-            saveBtn.classList.remove('bg-gray-300', 'dark:bg-gray-700', 'text-gray-500', 'dark:text-gray-400', 'cursor-not-allowed');
-            saveBtn.classList.add('bg-primary', 'text-white', 'hover:bg-primary/90');
-            saveBtn.innerHTML = '<i class="fa fa-download"></i> 保存图片';
-            saveBtn.disabled = false;
-          } else {
-            saveBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-primary/90');
-            saveBtn.classList.add('bg-gray-300', 'dark:bg-gray-700', 'text-gray-500', 'dark:text-gray-400', 'cursor-not-allowed');
-            saveBtn.innerHTML = '<i class="fa fa-download"></i> 禁止保存';
-            saveBtn.disabled = true;
-          }
-          
-          // 显示模态框
-          imageModal.classList.remove('opacity-0', 'pointer-events-none');
-          imageModal.querySelector('div').classList.remove('scale-95');
-          imageModal.querySelector('div').classList.add('scale-100');
-          document.body.style.overflow = 'hidden';
+        // 获取排序类型并应用排序
+        currentSort = btn.getAttribute('data-sort');
+        
+        // 对当前显示的画廊进行排序
+        if (!fanartGallery.classList.contains('hidden')) {
+          renderGallery('fanart');
+        } else {
+          renderGallery('created');
         }
       });
     });
     
-    // 保存图片功能
-    saveBtn.addEventListener('click', () => {
-      if (!currentImageId) return;
-      const data = imageData[currentImageId];
-      
-      if (data && data.allowSave) {
-        // 创建临时链接下载图片
-        const link = document.createElement('a');
-        link.href = data.image;
-        link.download = `${data.title}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // 显示提示
-        const notification = document.createElement('div');
-        notification.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-full shadow-lg z-50';
-        notification.textContent = '图片保存成功！';
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-          notification.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-          setTimeout(() => notification.remove(), 500);
-        }, 2000);
+    // 喜欢按钮事件
+    likeBtn.addEventListener('click', () => {
+      if (currentImageId) {
+        toggleLike(currentImageId);
       }
     });
     
-    // 关闭图片详情
-    function closeImageModal() {
-      imageModal.classList.add('opacity-0', 'pointer-events-none');
-      imageModal.querySelector('div').classList.remove('scale-100');
-      imageModal.querySelector('div').classList.add('scale-95');
-      document.body.style.overflow = '';
-      currentImageId = null;
-    }
-    
+    // 关闭模态框事件
     closeModal.addEventListener('click', closeImageModal);
     
     // 点击模态框背景关闭
@@ -650,31 +698,6 @@
       if (e.key === 'Escape' && !imageModal.classList.contains('pointer-events-none')) {
         closeImageModal();
       }
-    });
-    
-    // 过滤图片
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // 更新按钮状态
-        filterBtns.forEach(b => {
-          b.classList.remove('active', 'bg-primary', 'text-white');
-          b.classList.add('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
-        });
-        btn.classList.add('active', 'bg-primary', 'text-white');
-        btn.classList.remove('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
-        
-        const category = btn.textContent.trim();
-        const activeGallery = fanartGallery.classList.contains('hidden') ? createdGallery : fanartGallery;
-        
-        // 过滤图片
-        activeGallery.querySelectorAll('.gallery-item').forEach(item => {
-          if (category === '全部' || item.getAttribute('data-category') === category) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      });
     });
     
     // 加载更多按钮
@@ -700,6 +723,9 @@
         }, 2000);
       }, 1500);
     });
+    
+    // 初始化页面
+    window.addEventListener('DOMContentLoaded', initGallery);
   </script>
 </body>
 </html>
