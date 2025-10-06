@@ -166,8 +166,18 @@
       <!-- 模态框内容 -->
       <div class="flex flex-col md:flex-row h-full">
         <!-- 图片区域 -->
-        <div class="md:w-2/3 bg-gray-100 dark:bg-gray-800 flex items-center justify-center p-4">
+        <div class="md:w-2/3 bg-gray-100 dark:bg-gray-800 flex items-center justify-center p-4 relative">
+          <button id="prev-image" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors">
+            <i class="fa fa-chevron-left"></i>
+          </button>
           <img id="modal-image" src="" alt="图片详情" class="max-w-full max-h-[60vh] md:max-h-[80vh] object-contain">
+          <button id="next-image" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors">
+            <i class="fa fa-chevron-right"></i>
+          </button>
+          <!-- 图片计数 -->
+          <div id="image-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white text-sm px-3 py-1 rounded-full hidden">
+            1/1
+          </div>
         </div>
         
         <!-- 信息区域 -->
@@ -231,15 +241,15 @@
 
   <!-- JavaScript -->
   <script>
-    // 图片数据 - 包含排序所需的属性
+    // 图片数据 - 支持多图投稿
     const imageData = {
       1: {
         title: "by Cherry_Log",
         artist: "Cherry_Log",
         date: "2024-10-18",
         type: "fanart",
-        image: "gallery/contribution/1.png",
-        thumbnail: "gallery/contribution/1.png",
+        images: ["gallery/contribution/1.png"],
+        thumbnails: ["gallery/contribution/1.png"],
         description: "",
         allowSave: false
       },
@@ -248,8 +258,8 @@
         artist: "SANBWICH",
         date: "2024-5-2",
         type: "fanart",
-        image: "gallery/contribution/2.jpg",
-        thumbnail: "gallery/contribution/2.jpg",
+        images: ["gallery/contribution/2.jpg"],
+        thumbnails: ["gallery/contribution/2.jpg"],
         description: "",
         allowSave: true
       },
@@ -259,8 +269,8 @@
         artistLink: "https://space.bilibili.com/233954763",
         date: "2024-06-10",
         type: "created",
-        image: "gallery/official/设定.png",
-        thumbnail: "gallery/official/设定.png",
+        images: ["gallery/official/设定.png"],
+        thumbnails: ["gallery/official/设定.png"],
         description: "",
         allowSave: false
       },
@@ -270,8 +280,8 @@
         artistLink: "https://space.bilibili.com/233954763",
         date: "2024-07-13",
         type: "created",
-        image: "gallery/official/十万粉丝！.png",
-        thumbnail: "gallery/official/十万粉丝！.png",
+        images: ["gallery/official/十万粉丝！.png"],
+        thumbnails: ["gallery/official/十万粉丝！.png"],
         description: "十万粉丝纪念表情，超级感谢大家的支持和关注！",
         allowSave: true
       },
@@ -281,8 +291,8 @@
         artistLink: "https://space.bilibili.com/233954763",
         date: "2025-01-24",
         type: "created",
-        image: "gallery/official/蛇年.png",
-        thumbnail: "gallery/official/蛇年.png",
+        images: ["gallery/official/蛇年.png"],
+        thumbnails: ["gallery/official/蛇年.png"],
         description: "蛇年祝福表情！",
         allowSave: true
       },
@@ -291,8 +301,14 @@
         artist: "年子",
         date: "2024-01-26",
         type: "created",
-        image: "gallery/official/头脑风暴.png",
-        thumbnail: "gallery/official/头脑风暴.png",
+        images: [
+          "gallery/official/头脑风暴.png",
+          "gallery/official/头脑风暴2.png"
+        ],
+        thumbnails: [
+          "gallery/official/头脑风暴.png",
+          "gallery/official/头脑风暴2.png"
+        ],
         description: "？！",
         allowSave: true
       }
@@ -320,13 +336,30 @@
     const closeModal = document.getElementById('close-modal');
     const sortBtns = document.querySelectorAll('.sort-btn');
     const loadMoreBtn = document.getElementById('load-more');
+    const prevImageBtn = document.getElementById('prev-image');
+    const nextImageBtn = document.getElementById('next-image');
+    const imageCounter = document.getElementById('image-counter');
+    
     let currentImageId = null; // 当前查看的图片ID
+    let currentImageIndex = 0; // 当前图片索引
+    let currentGalleryType = 'fanart'; // 当前画廊类型
     let currentSort = 'default'; // 当前排序方式
     
     // 初始化页面 - 渲染图片
     function initGallery() {
       renderGallery('fanart');
       renderGallery('created');
+      
+      // 绑定导航按钮事件
+      prevImageBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateImage('prev');
+      });
+      
+      nextImageBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateImage('next');
+      });
     }
     
     // 渲染指定类型的画廊
@@ -352,12 +385,20 @@
         galleryItem.innerHTML = `
           <div class="image-container aspect-square cursor-pointer" data-id="${item.id}" 
             ${isProtected ? 'oncontextmenu="return false;" ondragstart="return false;"' : ''}>
-            <img src="${item.thumbnail}" alt="${item.title}" class="image-thumbnail" 
+            <img src="${item.thumbnails[0]}" alt="${item.title}" class="image-thumbnail" 
               ${isProtected ? 'draggable="false"' : ''}>
+              
+            <!-- 多图标识 -->
+            ${item.images.length > 1 ? `
+              <div class="absolute top-3 right-3 bg-primary text-white text-sm font-bold px-2 py-1 rounded-full shadow-md">
+                +${item.images.length - 1}
+              </div>
+            ` : ''}
+            
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
               <div class="p-4 text-white">
                 <h3 class="font-semibold">${item.title}</h3>
-                <p class="text-sm text-gray-200">${item.artist}</p>
+                <p class="text-sm text-gray-200">${item.artist} ${item.images.length > 1 ? `(${item.images.length}张)` : ''}</p>
               </div>
             </div>
           </div>
@@ -420,13 +461,21 @@
     function openImageDetail(imageId) {
       currentImageId = imageId;
       const data = imageData[imageId];
+      currentImageIndex = 0; // 重置图片索引
       
       if (data) {
-        modalImage.src = data.image;
+        // 确定当前画廊类型
+        currentGalleryType = data.type;
+        
+        // 显示第一张图片
+        modalImage.src = data.images[0];
         modalImage.alt = data.title;
         modalTitle.textContent = data.title;
         modalDate.textContent = data.date;
         modalDescription.textContent = data.description;
+        
+        // 更新图片计数
+        updateImageCounter(data);
         
         // 更新画师信息
         modalArtistInfo.innerHTML = '';
@@ -462,6 +511,57 @@
       }
     }
     
+    // 更新图片计数
+    function updateImageCounter(data) {
+      if (data.images.length > 1) {
+        imageCounter.textContent = `${currentImageIndex + 1}/${data.images.length}`;
+        imageCounter.classList.remove('hidden');
+      } else {
+        imageCounter.classList.add('hidden');
+      }
+    }
+    
+    // 图片导航
+    function navigateImage(direction) {
+      if (!currentImageId) return;
+      
+      const data = imageData[currentImageId];
+      
+      if (data.images.length > 1) {
+        // 同一作品内导航
+        if (direction === 'prev') {
+          currentImageIndex = (currentImageIndex - 1 + data.images.length) % data.images.length;
+        } else {
+          currentImageIndex = (currentImageIndex + 1) % data.images.length;
+        }
+        modalImage.src = data.images[currentImageIndex];
+        updateImageCounter(data);
+      } else {
+        // 不同作品间导航
+        navigateToAnotherWork(direction);
+      }
+    }
+    
+    // 导航到其他作品
+    function navigateToAnotherWork(direction) {
+      const currentData = imageData[currentImageId];
+      const allItems = Object.values(imageData)
+        .filter(item => item.type === currentGalleryType)
+        .sort((a, b) => a.id - b.id);
+      
+      const currentIndex = allItems.findIndex(item => item.id === currentData.id);
+      let newIndex;
+      
+      if (direction === 'prev') {
+        newIndex = (currentIndex - 1 + allItems.length) % allItems.length;
+      } else {
+        newIndex = (currentIndex + 1) % allItems.length;
+      }
+      
+      // 打开新作品
+      openImageDetail(allItems[newIndex].id);
+    }
+    
     // 关闭图片详情
     function closeImageModal() {
       imageModal.classList.add('opacity-0', 'pointer-events-none');
@@ -469,6 +569,7 @@
       imageModal.querySelector('div').classList.add('scale-95');
       document.body.style.overflow = '';
       currentImageId = null;
+      currentImageIndex = 0;
     }
     
     // 滚动时导航栏效果
@@ -503,6 +604,7 @@
     
     // 切换图片分类
     function switchToFanart() {
+      currentGalleryType = 'fanart';
       fanartGallery.classList.remove('hidden');
       createdGallery.classList.add('hidden');
       pageTitle.textContent = '粉丝投稿作品';
@@ -524,6 +626,7 @@
     }
     
     function switchToCreated() {
+      currentGalleryType = 'created';
       fanartGallery.classList.add('hidden');
       createdGallery.classList.remove('hidden');
       pageTitle.textContent = '官方创作作品';
@@ -582,10 +685,18 @@
       }
     });
     
-    // 按ESC键关闭
+    // 键盘导航支持
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !imageModal.classList.contains('pointer-events-none')) {
-        closeImageModal();
+      if (!imageModal.classList.contains('pointer-events-none')) {
+        if (e.key === 'Escape') {
+          closeImageModal();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          navigateImage('prev');
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          navigateImage('next');
+        }
       }
     });
     
