@@ -7,6 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
   
   <!-- Tailwind 配置 -->
   <script>
@@ -248,6 +251,22 @@
 
   <!-- JavaScript -->
   <script>
+    // 初始化Firebase - 替换为你的配置信息
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWR1PBp-uEleRPTE0zg4ehz7C5i_XklAo",
+      authDomain: "hasoook-gallery.firebaseapp.com",
+      databaseURL: "https://hasoook-gallery-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "hasoook-gallery",
+      storageBucket: "hasoook-gallery.firebasestorage.app",
+      messagingSenderId: "1074955728221",
+      appId: "1:1074955728221:web:bf5d522a38b73b7df024b4",
+      measurementId: "G-K624QTSTJP"
+    };
+
+    // 初始化Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    
     // 图片数据 - 包含排序所需的属性
     const imageData = {
       1: {
@@ -379,6 +398,7 @@
     
     // 初始化页面 - 渲染图片
     function initGallery() {
+      loadLikes(); // 从Firebase加载喜欢数据
       renderGallery('fanart');
       renderGallery('created');
     }
@@ -396,16 +416,18 @@
       
       // 渲染排序后的项目
       sortedItems.forEach(item => {
+        // 找到对应的id
+        const itemId = Object.keys(imageData).find(id => imageData[id] === item);
         const isProtected = !item.allowSave;
         const heartClass = item.isLiked ? 'fa-heart like-animation' : 'fa-heart-o';
         const colorClass = type === 'fanart' ? 'text-primary' : 'text-secondary';
         
         const galleryItem = document.createElement('div');
         galleryItem.className = 'gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md';
-        galleryItem.setAttribute('data-id', item.id);
+        galleryItem.setAttribute('data-id', itemId);
         
         galleryItem.innerHTML = `
-          <div class="image-container aspect-square cursor-pointer" data-id="${item.id}" 
+          <div class="image-container aspect-square cursor-pointer" data-id="${itemId}" 
             ${isProtected ? 'oncontextmenu="return false;" ondragstart="return false;"' : ''}>
             <img src="${item.thumbnail}" alt="${item.title}" class="image-thumbnail" 
               ${isProtected ? 'draggable="false"' : ''}>
@@ -417,8 +439,8 @@
             </div>
             <!-- 卡片上的喜欢按钮 -->
             <div class="absolute top-3 right-3 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-white dark:hover:bg-black/70 transition-colors">
-              <i class="fa ${heartClass} ${colorClass}" data-id="${item.id}"></i>
-              <span class="ml-1 text-sm font-medium ${colorClass}" data-id="${item.id}">${item.likeCount}</span>
+              <i class="fa ${heartClass} ${colorClass}" data-id="${itemId}"></i>
+              <span class="ml-1 text-sm font-medium ${colorClass}" data-id="${itemId}">${item.likeCount}</span>
             </div>
           </div>
           <div class="p-4">
@@ -437,13 +459,13 @@
         const heartIcon = galleryItem.querySelector(`.fa-heart, .fa-heart-o`);
         heartIcon.addEventListener('click', (e) => {
           e.stopPropagation();
-          toggleLike(item.id);
+          toggleLike(itemId);
         });
         
         // 绑定点击查看详情事件
         const imageContainer = galleryItem.querySelector('.image-container');
         imageContainer.addEventListener('click', () => {
-          openImageDetail(item.id);
+          openImageDetail(itemId);
         });
       });
     }
@@ -452,134 +474,48 @@
     function sortItems(items, sortType) {
       // 先给每个item添加id属性（用于排序后保持稳定性）
       items.forEach(item => {
-        // 找到对应的id
-        const id = Object.keys(imageData).find(key => imageData[key] === item);
-        item.id = id;
+        item.id = Object.keys(imageData).find(id => imageData[id] === item);
       });
       
       switch(sortType) {
         case 'like-desc':
-          // 按喜欢数量降序
-          return items.sort((a, b) => {
-            if (b.likeCount !== a.likeCount) {
-              return b.likeCount - a.likeCount;
-            }
-            // 数量相同则按ID排序保持稳定
-            return a.id - b.id;
-          });
-          
+          return items.sort((a, b) => b.likeCount - a.likeCount || a.id - b.id);
         case 'date-desc':
-          // 按日期降序（最新在前）
-          return items.sort((a, b) => {
-            if (b.date !== a.date) {
-              return new Date(b.date) - new Date(a.date);
-            }
-            return a.id - b.id;
-          });
-          
+          return items.sort((a, b) => new Date(b.date) - new Date(a.date) || a.id - b.id);
         case 'date-asc':
-          // 按日期升序（最早在前）
-          return items.sort((a, b) => {
-            if (a.date !== b.date) {
-              return new Date(a.date) - new Date(b.date);
-            }
-            return a.id - b.id;
-          });
-          
-        case 'default':
-        default:
-          // 默认按ID排序
+          return items.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+        default: // default
           return items.sort((a, b) => a.id - b.id);
-      }
-    }
-    
-    // 切换喜欢状态
-    function toggleLike(imageId) {
-      const data = imageData[imageId];
-      if (!data) return;
-      
-      // 切换喜欢状态
-      data.isLiked = !data.isLiked;
-      
-      // 更新喜欢数量
-      data.likeCount += data.isLiked ? 1 : -1;
-      
-      // 更新所有地方的显示
-      updateLikeDisplay(imageId, data);
-    }
-    
-    // 更新喜欢显示
-    function updateLikeDisplay(imageId, data) {
-      // 更新卡片上的显示
-      const cardLikeIcons = document.querySelectorAll(`.image-container [data-id="${imageId}"].fa-heart, .image-container [data-id="${imageId}"].fa-heart-o`);
-      const cardLikeCounts = document.querySelectorAll(`.image-container span[data-id="${imageId}"]`);
-      
-      cardLikeIcons.forEach(icon => {
-        if (data.isLiked) {
-          icon.classList.remove('fa-heart-o');
-          icon.classList.add('fa-heart', 'like-animation');
-        } else {
-          icon.classList.remove('fa-heart', 'like-animation');
-          icon.classList.add('fa-heart-o');
-        }
-      });
-      
-      cardLikeCounts.forEach(countElem => {
-        countElem.textContent = data.likeCount;
-      });
-      
-      // 如果当前在详情页，更新详情页显示
-      if (currentImageId === imageId) {
-        likeCountDisplay.textContent = data.likeCount;
-        modalLikeCount.textContent = data.likeCount;
-        
-        if (data.isLiked) {
-          likeIcon.classList.remove('fa-heart-o');
-          likeIcon.classList.add('fa-heart', 'like-animation');
-        } else {
-          likeIcon.classList.remove('fa-heart', 'like-animation');
-          likeIcon.classList.add('fa-heart-o');
-        }
       }
     }
     
     // 打开图片详情
     function openImageDetail(imageId) {
-      currentImageId = imageId;
-      const data = imageData[imageId];
+      const item = imageData[imageId];
+      if (!item) return;
       
-      if (data) {
-        modalImage.src = data.image;
-        modalImage.alt = data.title;
-        modalTitle.textContent = data.title;
-        modalArtist.textContent = data.artist;
-        modalDate.textContent = data.date;
-        modalLikeCount.textContent = data.likeCount;
-        modalDescription.textContent = data.description;
-        
-        // 更新喜欢按钮状态
-        likeCountDisplay.textContent = data.likeCount;
-        const colorClass = data.type === 'fanart' ? 'text-primary' : 'text-secondary';
-        const hoverClass = data.type === 'fanart' ? 'hover:bg-primary' : 'hover:bg-secondary';
-        
-        if (data.isLiked) {
-          likeIcon.className = `fa fa-heart text-xl ${colorClass} like-animation`;
-          likeBtn.className = `flex-1 py-3 rounded-lg ${data.type === 'fanart' ? 'bg-primary' : 'bg-secondary'} text-white transition-all duration-300 flex items-center justify-center gap-2 font-medium`;
-        } else {
-          likeIcon.className = `fa fa-heart-o text-xl ${colorClass}`;
-          likeBtn.className = `flex-1 py-3 rounded-lg bg-light-300 dark:bg-dark-300 ${hoverClass} hover:text-white transition-all duration-300 flex items-center justify-center gap-2 font-medium`;
-        }
-        
-        // 显示模态框
-        imageModal.classList.remove('opacity-0', 'pointer-events-none');
-        imageModal.querySelector('div').classList.remove('scale-95');
-        imageModal.querySelector('div').classList.add('scale-100');
-        document.body.style.overflow = 'hidden';
-      }
+      currentImageId = imageId;
+      
+      // 更新模态框内容
+      modalImage.src = item.image;
+      modalTitle.textContent = item.title;
+      modalArtist.textContent = item.artist;
+      modalDate.textContent = item.date;
+      modalLikeCount.textContent = item.likeCount;
+      modalDescription.textContent = item.description;
+      
+      // 更新喜欢按钮状态
+      updateLikeButtonState(item.isLiked, item.likeCount);
+      
+      // 显示模态框
+      imageModal.classList.remove('opacity-0', 'pointer-events-none');
+      imageModal.querySelector('div').classList.remove('scale-95');
+      imageModal.querySelector('div').classList.add('scale-100');
+      document.body.style.overflow = 'hidden';
     }
     
     // 关闭图片详情
-    function closeImageModal() {
+    function closeImageDetail() {
       imageModal.classList.add('opacity-0', 'pointer-events-none');
       imageModal.querySelector('div').classList.remove('scale-100');
       imageModal.querySelector('div').classList.add('scale-95');
@@ -587,157 +523,247 @@
       currentImageId = null;
     }
     
-    // 滚动时导航栏效果
-    window.addEventListener('scroll', () => {
+    // 切换喜欢状态
+    function toggleLike(imageId) {
+      const data = imageData[imageId];
+      if (!data) return;
+      
+      // 获取Firebase引用
+      const likeRef = database.ref(`likes/${imageId}`);
+      
+      // 读取当前喜欢状态
+      likeRef.once('value').then(snapshot => {
+        const currentLikes = snapshot.val() || { count: data.likeCount, users: {} };
+        const userId = localStorage.getItem('userId') || generateUserId();
+        
+        // 切换喜欢状态
+        if (currentLikes.users[userId]) {
+          // 取消喜欢
+          delete currentLikes.users[userId];
+          currentLikes.count = Math.max(0, currentLikes.count - 1);
+          data.isLiked = false;
+        } else {
+          // 新增喜欢
+          currentLikes.users[userId] = true;
+          currentLikes.count = (currentLikes.count || 0) + 1;
+          data.isLiked = true;
+        }
+        
+        // 更新本地数据
+        data.likeCount = currentLikes.count;
+        
+        // 保存到Firebase
+        likeRef.set(currentLikes);
+        
+        // 更新显示
+        updateLikeDisplay(imageId, data);
+      });
+    }
+    
+    // 生成唯一用户ID并保存到本地存储
+    function generateUserId() {
+      const userId = 'user_' + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('userId', userId);
+      return userId;
+    }
+    
+    // 从Firebase加载喜欢数据
+    function loadLikes() {
+      const likesRef = database.ref('likes');
+      
+      likesRef.on('value', snapshot => {
+        const likesData = snapshot.val() || {};
+        
+        // 更新本地数据
+        Object.keys(likesData).forEach(imageId => {
+          if (imageData[imageId]) {
+            const userId = localStorage.getItem('userId') || generateUserId();
+            imageData[imageId].likeCount = likesData[imageId].count || 0;
+            imageData[imageId].isLiked = likesData[imageId].users?.[userId] || false;
+          }
+        });
+        
+        // 重新渲染画廊以反映最新的喜欢数据
+        renderGallery('fanart');
+        renderGallery('created');
+      });
+    }
+    
+    // 更新喜欢显示
+    function updateLikeDisplay(imageId, data) {
+      // 更新卡片上的喜欢显示
+      const heartIcons = document.querySelectorAll(`.fa-heart, .fa-heart-o`);
+      heartIcons.forEach(icon => {
+        if (icon.getAttribute('data-id') === imageId) {
+          icon.className = data.isLiked ? 'fa fa-heart like-animation text-primary' : 'fa fa-heart-o text-primary';
+          const countSpan = icon.nextElementSibling;
+          if (countSpan) countSpan.textContent = data.likeCount;
+        }
+      });
+      
+      // 如果在详情页，更新详情页的喜欢显示
+      if (currentImageId === imageId) {
+        updateLikeButtonState(data.isLiked, data.likeCount);
+        modalLikeCount.textContent = data.likeCount;
+      }
+    }
+    
+    // 更新喜欢按钮状态
+    function updateLikeButtonState(isLiked, count) {
+      if (isLiked) {
+        likeIcon.className = 'fa fa-heart text-xl like-animation';
+        likeBtn.classList.add('bg-primary', 'text-white');
+        likeBtn.classList.remove('bg-light-300', 'dark:bg-dark-300');
+      } else {
+        likeIcon.className = 'fa fa-heart-o text-xl';
+        likeBtn.classList.remove('bg-primary', 'text-white');
+        likeBtn.classList.add('bg-light-300', 'dark:bg-dark-300');
+      }
+      likeCountDisplay.textContent = count;
+    }
+    
+    // 切换标签页
+    function switchTab(type) {
+      // 更新标题和描述
+      if (type === 'fanart') {
+        pageTitle.textContent = '粉丝投稿作品';
+        pageDescription.textContent = '感谢大家的喜爱与创作，这里收集了所有粉丝绘制的Hasoook人设作品，每一份都是独特的心意。';
+      } else {
+        pageTitle.textContent = '官方创作作品';
+        pageDescription.textContent = '这里是官方发布的Hasoook相关设定和表情，欢迎大家使用和分享。';
+      }
+      
+      // 显示对应的画廊
+      fanartGallery.classList.toggle('hidden', type !== 'fanart');
+      createdGallery.classList.toggle('hidden', type !== 'created');
+      
+      // 更新导航标签状态
+      tabFanart.classList.toggle('active', type === 'fanart');
+      tabCreated.classList.toggle('active', type === 'created');
+      tabFanart.classList.toggle('text-primary', type === 'fanart');
+      tabCreated.classList.toggle('text-primary', type === 'created');
+      tabFanart.classList.toggle('border-primary', type === 'fanart');
+      tabCreated.classList.toggle('border-primary', type === 'created');
+      tabFanart.classList.toggle('text-gray-600', type !== 'fanart');
+      tabCreated.classList.toggle('text-gray-600', type !== 'created');
+      tabFanart.classList.toggle('dark:text-gray-400', type !== 'fanart');
+      tabCreated.classList.toggle('dark:text-gray-400', type !== 'created');
+      
+      // 更新移动端导航标签状态
+      mobileTabFanart.classList.toggle('active', type === 'fanart');
+      mobileTabCreated.classList.toggle('active', type === 'created');
+      mobileTabFanart.classList.toggle('text-primary', type === 'fanart');
+      mobileTabCreated.classList.toggle('text-primary', type === 'created');
+      mobileTabFanart.classList.toggle('text-gray-600', type !== 'fanart');
+      mobileTabCreated.classList.toggle('text-gray-600', type !== 'created');
+      mobileTabFanart.classList.toggle('dark:text-gray-400', type !== 'fanart');
+      mobileTabCreated.classList.toggle('dark:text-gray-400', type !== 'created');
+      
+      // 关闭移动菜单
+      mobileMenu.classList.add('hidden');
+    }
+    
+    // 切换排序方式
+    function switchSort(sortType) {
+      currentSort = sortType;
+      
+      // 更新排序按钮状态
+      sortBtns.forEach(btn => {
+        if (btn.getAttribute('data-sort') === sortType) {
+          btn.classList.add('bg-primary', 'text-white');
+          btn.classList.remove('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
+        } else {
+          btn.classList.remove('bg-primary', 'text-white');
+          btn.classList.add('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
+        }
+      });
+      
+      // 重新渲染当前显示的画廊
+      const isFanartVisible = !fanartGallery.classList.contains('hidden');
+      renderGallery(isFanartVisible ? 'fanart' : 'created');
+    }
+    
+    // 切换主题
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    }
+    
+    // 检查并应用保存的主题
+    function applySavedTheme() {
+      if (localStorage.getItem('theme') === 'dark' || 
+          (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    
+    // 滚动时改变导航栏样式
+    function handleScroll() {
       if (window.scrollY > 50) {
         navbar.classList.add('py-2', 'shadow');
         navbar.classList.remove('py-3', 'md:py-4', 'shadow-sm');
       } else {
-        navbar.classList.add('py-3', 'md:py-4', 'shadow-sm');
         navbar.classList.remove('py-2', 'shadow');
+        navbar.classList.add('py-3', 'md:py-4', 'shadow-sm');
       }
-    });
-    
-    // 移动端菜单切换
-    mobileMenuBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-    
-    // 主题切换
-    themeToggle.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    });
-    
-    // 检查本地存储的主题偏好
-    if (localStorage.getItem('theme') === 'dark' || 
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
     }
     
-    // 切换图片分类
-    function switchToFanart() {
-      fanartGallery.classList.remove('hidden');
-      createdGallery.classList.add('hidden');
-      pageTitle.textContent = '粉丝投稿作品';
-      pageDescription.textContent = '感谢大家的喜爱与创作，这里收集了所有粉丝绘制的Hasoook人设作品，每一份都是独特的心意。';
+    // 事件监听
+    document.addEventListener('DOMContentLoaded', () => {
+      // 初始化画廊
+      initGallery();
       
-      // 更新导航状态
-      tabFanart.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
-      tabFanart.classList.remove('text-gray-600', 'dark:text-gray-400');
-      tabCreated.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary');
-      tabCreated.classList.add('text-gray-600', 'dark:text-gray-400');
+      // 应用保存的主题
+      applySavedTheme();
       
-      mobileTabFanart.classList.add('active', 'text-primary');
-      mobileTabFanart.classList.remove('text-gray-600', 'dark:text-gray-400');
-      mobileTabCreated.classList.remove('active', 'text-primary');
-      mobileTabCreated.classList.add('text-gray-600', 'dark:text-gray-400');
+      // 导航栏滚动效果
+      window.addEventListener('scroll', handleScroll);
       
-      // 关闭移动菜单
-      mobileMenu.classList.add('hidden');
-    }
-    
-    function switchToCreated() {
-      fanartGallery.classList.add('hidden');
-      createdGallery.classList.remove('hidden');
-      pageTitle.textContent = '官方创作作品';
-      pageDescription.textContent = '这里展示的是官方定制的Hasoook人设、表情和各类图片，用于视频创作和粉丝互动。';
+      // 移动端菜单切换
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
       
-      // 更新导航状态
-      tabCreated.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
-      tabCreated.classList.remove('text-gray-600', 'dark:text-gray-400');
-      tabFanart.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary');
-      tabFanart.classList.add('text-gray-600', 'dark:text-gray-400');
+      // 主题切换
+      themeToggle.addEventListener('click', toggleTheme);
       
-      mobileTabCreated.classList.add('active', 'text-primary');
-      mobileTabCreated.classList.remove('text-gray-600', 'dark:text-gray-400');
-      mobileTabFanart.classList.remove('active', 'text-primary');
-      mobileTabFanart.classList.add('text-gray-600', 'dark:text-gray-400');
+      // 标签页切换
+      tabFanart.addEventListener('click', () => switchTab('fanart'));
+      tabCreated.addEventListener('click', () => switchTab('created'));
+      mobileTabFanart.addEventListener('click', () => switchTab('fanart'));
+      mobileTabCreated.addEventListener('click', () => switchTab('created'));
       
-      // 关闭移动菜单
-      mobileMenu.classList.add('hidden');
-    }
-    
-    tabFanart.addEventListener('click', switchToFanart);
-    tabCreated.addEventListener('click', switchToCreated);
-    mobileTabFanart.addEventListener('click', switchToFanart);
-    mobileTabCreated.addEventListener('click', switchToCreated);
-    
-    // 排序按钮事件
-    sortBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // 更新按钮状态
-        sortBtns.forEach(b => {
-          b.classList.remove('active', 'bg-primary', 'text-white');
-          b.classList.add('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
+      // 排序按钮
+      sortBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchSort(btn.getAttribute('data-sort'));
         });
-        btn.classList.add('active', 'bg-primary', 'text-white');
-        btn.classList.remove('bg-light-300', 'dark:bg-dark-100', 'hover:bg-primary/10');
-        
-        // 获取排序类型并应用排序
-        currentSort = btn.getAttribute('data-sort');
-        
-        // 对当前显示的画廊进行排序
-        if (!fanartGallery.classList.contains('hidden')) {
-          renderGallery('fanart');
-        } else {
-          renderGallery('created');
+      });
+      
+      // 关闭模态框
+      closeModal.addEventListener('click', closeImageDetail);
+      imageModal.addEventListener('click', (e) => {
+        if (e.target === imageModal) closeImageDetail();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !imageModal.classList.contains('pointer-events-none')) {
+          closeImageDetail();
         }
       });
-    });
-    
-    // 喜欢按钮事件
-    likeBtn.addEventListener('click', () => {
-      if (currentImageId) {
-        toggleLike(currentImageId);
-      }
-    });
-    
-    // 关闭模态框事件
-    closeModal.addEventListener('click', closeImageModal);
-    
-    // 点击模态框背景关闭
-    imageModal.addEventListener('click', (e) => {
-      if (e.target === imageModal) {
-        closeImageModal();
-      }
-    });
-    
-    // 按ESC键关闭
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !imageModal.classList.contains('pointer-events-none')) {
-        closeImageModal();
-      }
-    });
-    
-    // 加载更多按钮
-    loadMoreBtn.addEventListener('click', () => {
-      // 模拟加载中状态
-      loadMoreBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
-      loadMoreBtn.disabled = true;
       
-      // 2秒后恢复原状
-      setTimeout(() => {
-        loadMoreBtn.innerHTML = '加载更多 <i class="fa fa-chevron-down ml-1"></i>';
-        loadMoreBtn.disabled = false;
-        
-        // 显示提示
-        const notification = document.createElement('div');
-        notification.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-dark-200 dark:bg-light-100 text-white dark:text-gray-800 px-6 py-3 rounded-full shadow-lg z-50';
-        notification.textContent = '已经加载全部内容啦~';
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-          notification.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-          setTimeout(() => notification.remove(), 500);
-        }, 2000);
-      }, 1500);
+      // 详情页喜欢按钮
+      likeBtn.addEventListener('click', () => {
+        if (currentImageId) toggleLike(currentImageId);
+      });
+      
+      // 加载更多按钮
+      loadMoreBtn.addEventListener('click', () => {
+        // 这里可以添加加载更多的逻辑
+        alert('已加载全部作品');
+      });
     });
-    
-    // 初始化页面
-    window.addEventListener('DOMContentLoaded', initGallery);
   </script>
 </body>
 </html>
