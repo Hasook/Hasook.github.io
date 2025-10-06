@@ -250,7 +250,7 @@
         type: "fanart",
         images: ["gallery/contribution/1.png"],
         thumbnails: ["gallery/contribution/1.png"],
-        description: "包含2张作品",
+        description: "",
         allowSave: false
       },
       2: {
@@ -471,8 +471,8 @@
         modalDate.textContent = data.date;
         modalDescription.textContent = data.description;
         
-        // 更新图片计数
-        updateImageCounter(data);
+        // 更新图片计数和导航按钮显示状态
+        updateNavigationControls(data);
         
         // 更新画师信息
         modalArtistInfo.innerHTML = '';
@@ -508,12 +508,19 @@
       }
     }
     
-    // 更新图片计数
-    function updateImageCounter(data) {
+    // 更新图片计数和导航按钮显示状态
+    function updateNavigationControls(data) {
+      // 根据图片数量决定是否显示导航按钮和计数器
       if (data.images.length > 1) {
+        // 多图情况：显示导航按钮和计数器
+        prevImageBtn.classList.remove('hidden');
+        nextImageBtn.classList.remove('hidden');
         imageCounter.textContent = `${currentImageIndex + 1}/${data.images.length}`;
         imageCounter.classList.remove('hidden');
       } else {
+        // 单图情况：隐藏导航按钮和计数器
+        prevImageBtn.classList.add('hidden');
+        nextImageBtn.classList.add('hidden');
         imageCounter.classList.add('hidden');
       }
     }
@@ -532,9 +539,8 @@
           currentImageIndex = (currentImageIndex + 1) % data.images.length;
         }
         modalImage.src = data.images[currentImageIndex];
-        updateImageCounter(data);
+        imageCounter.textContent = `${currentImageIndex + 1}/${data.images.length}`;
       }
-      // 单张图片时不执行任何导航操作
     }
     
     // 关闭图片详情
@@ -545,6 +551,10 @@
       document.body.style.overflow = '';
       currentImageId = null;
       currentImageIndex = 0;
+      
+      // 重置导航按钮显示状态（避免影响下次打开）
+      prevImageBtn.classList.remove('hidden');
+      nextImageBtn.classList.remove('hidden');
     }
     
     // 滚动时导航栏效果
@@ -583,7 +593,7 @@
       fanartGallery.classList.remove('hidden');
       createdGallery.classList.add('hidden');
       pageTitle.textContent = '粉丝投稿作品';
-      pageDescription.textContent = '感谢大家的喜爱与创作，这里收集了所有粉丝绘制的Hasoook人设作品，每一份都是独特的心意。';
+      pageDescription.textContent = '这里收集了所有粉丝绘制的Hasoook人设作品，感谢大家的喜爱与创作！';
       
       // 更新导航状态
       tabFanart.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
@@ -660,17 +670,23 @@
       }
     });
     
-    // 键盘导航支持
+    // 键盘导航支持 - 只在多图时生效
     document.addEventListener('keydown', (e) => {
-      if (!imageModal.classList.contains('pointer-events-none')) {
-        if (e.key === 'Escape') {
+      if (!imageModal.classList.contains('pointer-events-none') && currentImageId) {
+        const data = imageData[currentImageId];
+        if (data.images.length > 1) { // 只有多图时才响应键盘导航
+          if (e.key === 'Escape') {
+            closeImageModal();
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            navigateImage('prev');
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            navigateImage('next');
+          }
+        } else if (e.key === 'Escape') {
+          // 单图时只响应ESC关闭
           closeImageModal();
-        } else if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          navigateImage('prev');
-        } else if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          navigateImage('next');
         }
       }
     });
