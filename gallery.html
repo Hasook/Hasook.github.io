@@ -248,9 +248,15 @@
         artist: "Cherry_Log",
         date: "2024-10-18",
         type: "fanart",
-        images: ["gallery/contribution/1.png"],
-        thumbnails: ["gallery/contribution/1.png"],
-        description: "",
+        images: [
+          "gallery/contribution/1-1.png",
+          "gallery/contribution/1-2.png"
+        ],
+        thumbnails: [
+          "gallery/contribution/1-1.png",
+          "gallery/contribution/1-2.png"
+        ],
+        description: "包含2张作品",
         allowSave: false
       },
       2: {
@@ -302,11 +308,11 @@
         date: "2024-01-26",
         type: "created",
         images: [
-          "gallery/official/头脑风暴.png",
+          "gallery/official/头脑风暴1.png",
           "gallery/official/头脑风暴2.png"
         ],
         thumbnails: [
-          "gallery/official/头脑风暴.png",
+          "gallery/official/头脑风暴1.png",
           "gallery/official/头脑风暴2.png"
         ],
         description: "？！",
@@ -376,7 +382,6 @@
       // 渲染排序后的项目
       sortedItems.forEach(item => {
         const isProtected = !item.allowSave;
-        const colorClass = type === 'fanart' ? 'text-primary' : 'text-secondary';
         
         const galleryItem = document.createElement('div');
         galleryItem.className = 'gallery-item card-hover bg-light-100 dark:bg-dark-100 rounded-xl overflow-hidden shadow-md';
@@ -405,9 +410,7 @@
           <div class="p-4">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-500 dark:text-gray-400">${item.date}</span>
-              <span class="px-2 py-1 text-xs rounded-full ${type === 'fanart' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}">
-                ${type === 'fanart' ? '粉丝创作' : '官方'}
-              </span>
+              <!-- 已删除"粉丝创作"和"官方"标签 -->
             </div>
           </div>
         `;
@@ -536,30 +539,8 @@
         }
         modalImage.src = data.images[currentImageIndex];
         updateImageCounter(data);
-      } else {
-        // 不同作品间导航
-        navigateToAnotherWork(direction);
       }
-    }
-    
-    // 导航到其他作品
-    function navigateToAnotherWork(direction) {
-      const currentData = imageData[currentImageId];
-      const allItems = Object.values(imageData)
-        .filter(item => item.type === currentGalleryType)
-        .sort((a, b) => a.id - b.id);
-      
-      const currentIndex = allItems.findIndex(item => item.id === currentData.id);
-      let newIndex;
-      
-      if (direction === 'prev') {
-        newIndex = (currentIndex - 1 + allItems.length) % allItems.length;
-      } else {
-        newIndex = (currentIndex + 1) % allItems.length;
-      }
-      
-      // 打开新作品
-      openImageDetail(allItems[newIndex].id);
+      // 单张图片时不执行任何导航操作
     }
     
     // 关闭图片详情
