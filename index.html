@@ -1,71 +1,1165 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>页面不存在</title>
-    <link rel="icon" href="https://zh.minecraft.wiki/images/thumb/Bedrock_JE2_BE2.png/150px-Bedrock_JE2_BE2.png" type="image/x-icon">
+    <title>Hasoook | 我的世界模组开发者</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+        :root {
+            --primary-color: #6366f1;
+            --primary-light: #8b5cf6;
+            --secondary-color: #06b6d4;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-hover: #334155;
+            --text-color: #f8fafc;
+            --text-light: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow: rgba(0, 0, 0, 0.25);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 12px;
+        }
+
+        [data-theme="light"] {
+            --primary-color: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary-color: #0891b2;
+            --accent-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --background-color: #f8fafc;
+            --card-bg: #ffffff;
+            --card-hover: #f1f5f9;
+            --text-color: #0f172a;
+            --text-light: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.05);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            padding: 2rem;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 20%);
+            transition: var(--transition);
         }
 
         .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 4rem;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            transition: var(--transition);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(10deg) scale(1.05);
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            color: var(--text-color);
+            font-size: 1.2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover::before {
+            opacity: 0.1;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        .theme-toggle i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
             text-align: center;
-            animation: bounce 2s infinite;
+            margin-bottom: 6rem; /* 增加间距 */
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .title {
-            font-size: 36px;
-            font-weight: bold;
-            color: #333;
+        .hero h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
         }
 
-        .content {
-            margin-top: 20px;
-            color: #666;
+        .hero p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            margin-bottom: 5rem; /* 增加间距 */
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: 0 8px 24px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .nav-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .nav-card i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: var(--transition);
+        }
+
+        .nav-card:hover i {
+            transform: scale(1.1);
+        }
+
+        .nav-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .nav-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-top: auto;
+            transition: var(--transition);
+        }
+
+        .card-link i {
+            font-size: 0.9rem;
+            background: none;
+            -webkit-text-fill-color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-card:hover .card-link i {
+            transform: translateX(4px);
+        }
+
+        /* 计划区域新样式 */
+        .plans-section {
+            margin: 6rem 0; /* 增加间距 */
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        /* 筛选标签 - 只保留状态筛选 */
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tag.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-tag:hover:not(.active) {
+            border-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        /* 计划卡片容器 */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 8px 24px var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .plan-card.hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 32px var(--shadow);
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .plan-type {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .type-mod {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .type-video {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .type-tutorial {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-color);
+        }
+
+        .type-idea {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .type-stream {
+            background: rgba(236, 72, 153, 0.1);
+            color: #ec4899;
+        }
+
+        .plan-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-color);
+        }
+
+        .plan-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+
+        .plan-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .plan-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .plan-status {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .status-in-progress {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status-upcoming {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-color);
+        }
+
+        .status-paused {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .plan-actions {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* 分页控件样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .pagination-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0 1rem;
+        }
+
+        /* 相关链接部分 */
+        .related-links {
+            margin-top: 6rem; /* 增加间距 */
+            width: 100%;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .link-category {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 320px;
+        }
+
+        .link-category:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .category-title i {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .links-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .link-item:hover {
+            background: var(--card-hover);
+            color: var(--text-color);
+            transform: translateX(4px);
+        }
+
+        .link-item i {
+            font-size: 1rem;
+            width: 20px;
+            color: var(--primary-color);
+        }
+
+        .link-item span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* 滚动容器设计 - 半透明滚动条，仅在滚动时显示 */
+        .scroll-container {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* 半透明滚动条样式 - 仅在滚动时显示 */
+        .scroll-container::-webkit-scrollbar {
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .scroll-container:hover::-webkit-scrollbar,
+        .scroll-container:focus::-webkit-scrollbar,
+        .scroll-container:active::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 3px;
+            transition: background 0.3s ease;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+
+        /* 针对Firefox的滚动条样式 */
+        .scroll-container {
+            scrollbar-width: none;
+            scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+        }
+
+        .scroll-container:hover,
+        .scroll-container:focus,
+        .scroll-container:active {
+            scrollbar-width: thin;
+        }
+
+        footer {
+            margin-top: 6rem; /* 增加间距 */
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-4px);
+        }
+
+        .copyright {
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
             }
-            40% {
-                transform: translateY(-20px);
+            
+            header {
+                flex-direction: column;
+                gap: 1.5rem;
+                margin-bottom: 3rem;
             }
-            60% {
-                transform: translateY(-10px);
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .nav-grid, .plans-container, .links-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
             }
         }
 
-        .astronaut {
-            max-width: 100%;
-            height: auto;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
+        @media (max-width: 480px) {
+            .filter-tags {
+                gap: 0.5rem;
             }
-            50% {
-                transform: translateY(-20px);
+            
+            .filter-tag {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://zh.minecraft.wiki/images/thumb/Iron_Door_JE5.png/97px-Iron_Door_JE5.png" alt="Astronaut" class="astronaut">
-        <div class="title">对不起！您访问的页面不存在</div>
+        <header>
+            <div class="logo">
+                <div class="logo-icon">H</div>
+                <div class="logo-text">
+                    <h1>Hasoook</h1>
+                    <p>我的世界模组开发者 & B站UP主</p>
+                </div>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <section class="hero">
+            <h2>创造无限可能</h2>
+            <p>探索我的世界模组开发、艺术作品和知识分享。在这里，创意与技术相遇，创造独特的游戏体验。</p>
+        </section>
+
+        <section class="nav-grid">
+            <div class="nav-card" onclick="window.open('https://hasoook.com/mod', '_blank')">
+                <i class="fas fa-download"></i>
+                <h3>模组下载</h3>
+                <p>探索和下载我开发的各种我的世界模组，每个模组都经过精心设计和测试！</p>
+                <div class="card-link">
+                    <span>访问下载</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            
+            <div class="nav-card" onclick="window.open('https://hasoook.com/gallery', '_blank')">
+                <i class="fas fa-images"></i>
+                <h3>画廊</h3>
+                <p>浏览粉丝为我创作的图片和我的约稿作品，感谢大家的支持和创作激情！</p>
+                <div class="card-link">
+                    <span>查看作品</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            
+            <div class="nav-card" onclick="window.open('https://www.mcmod.cn/class/14799.html', '_blank')">
+                <i class="fas fa-book"></i>
+                <h3>模组Wiki</h3>
+                <p>访问我的模组wiki！</p>
+                <div class="card-link">
+                    <span>浏览Wiki</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            
+            <div class="nav-card" onclick="window.location.href='mailto:2656053560@qq.com?subject=商务合作'">
+                <i class="fas fa-handshake"></i>
+                <h3>商务合作</h3>
+                <p>如果您有合作意向，欢迎联系我讨论内容创作或其他合作机会！</p>
+                <div class="card-link">
+                    <span>联系合作</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- 重新设计的计划区域 -->
+        <section class="plans-section">
+            <h2 class="section-title">
+                <i class="fas fa-tasks"></i>
+                <span>项目与计划</span>
+            </h2>
+            
+            <!-- 筛选标签 - 只保留状态筛选 -->
+            <div class="filter-tags">
+                <div class="filter-tag active" data-status="active">
+                    <i class="fas fa-fire"></i> 活跃项目
+                </div>
+                <div class="filter-tag" data-status="all">
+                    <i class="fas fa-th"></i> 所有项目
+                </div>
+                <div class="filter-tag" data-status="completed">
+                    <i class="fas fa-check"></i> 已结束
+                </div>
+                <div class="filter-tag" data-status="paused">
+                    <i class="fas fa-pause"></i> 暂停
+                </div>
+            </div>
+            
+            <!-- 计划卡片容器 -->
+            <div class="plans-container">
+                <!-- 模组开发计划 -->
+                <div class="plan-card" data-status="in-progress">
+                    <div class="plan-header">
+                        <span class="plan-type type-mod">模组开发</span>
+                    </div>
+                    <h3 class="plan-title">Hasoook模组更新</h3>
+                    <p class="plan-description">这是我的同名模组，在学习模组开发过程中创作的作品！</p>
+                    <div class="plan-meta">
+                        <span><i class="far fa-calendar"></i> 长期 </span>
+                        <span><i class="far fa-clock"></i> 持续更新中 </span>
+                    </div>
+                    <div class="plan-footer">
+                        <span class="plan-status status-in-progress">进行中</span>
+                        <span class="plan-actions"><i class="fas fa-info-circle"></i> 详情</span>
+                    </div>
+                </div>
+                
+                <!-- 直播计划 -->
+                <div class="plan-card" data-status="paused">
+                    <div class="plan-header">
+                        <span class="plan-type type-stream">直播计划</span>
+                    </div>
+                    <h3 class="plan-title">模组开发直播/游戏直播</h3>
+                    <p class="plan-description">在线直播模组开发过程，或其他进行的小游戏直播！</p>
+                    <div class="plan-meta">
+                        <span><i class="far fa-calendar"></i> 待定</span>
+                        <span><i class="far fa-clock"></i> 待定</span>
+                    </div>
+                    <div class="plan-footer">
+                        <span class="plan-status status-upcoming">待开始</span>
+                        <span class="plan-actions"><i class="fas fa-external-link"></i> 观看</span>
+                    </div>
+                </div>
+                
+                <!-- 创意想法收集 -->
+                <div class="plan-card" data-status="in-progress">
+                    <div class="plan-header">
+                        <span class="plan-type type-idea">创意收集</span>
+                    </div>
+                    <h3 class="plan-title">玩家创意投稿收集</h3>
+                    <p class="plan-description">收集玩家对模组的创意和建议，筛选优质想法进行开发实现！</p>
+                    <div class="plan-meta">
+                        <span><i class="far fa-calendar"></i> 长期活动</span>
+                        <span><i class="far fa-clock"></i> 持续进行</span>
+                    </div>
+                    <div class="plan-footer">
+                        <span class="plan-status status-in-progress">进行中</span>
+                        <span class="plan-actions"><i class="fas fa-paper-plane"></i> 提交</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分页控件 -->
+            <div class="pagination">
+                <button class="pagination-btn" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="pagination-info">
+                    <span id="currentPage">1</span> / <span id="totalPages">1</span>
+                </div>
+                <button class="pagination-btn" id="nextPage">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <section class="related-links">
+            <h2 class="section-title">
+                <i class="fas fa-share-nodes"></i>
+                <span>相关链接</span>
+            </h2>
+            
+            <div class="links-grid">
+                <div class="link-category">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <i class="fas fa-play-circle"></i>
+                            <span>视频平台</span>
+                        </div>
+                    </div>
+                    <div class="scroll-container">
+                        <div class="links-list">
+                            <a class="link-item" href="https://space.bilibili.com/38047059" target="_blank">
+                                <i class="fab fa-bilibili"></i>
+                                <span>哔哩哔哩</span>
+                            </a>
+                            <a class="link-item" href="https://www.douyin.com/user/MS4wLjABAAAAvSXnM0JnhPtFX-Glb8fv3aeuIyxYuxwJa0Jx1bgQOmAu8kOSmPT-a29qJAkNtvUv?from_tab_name=main" target="_blank">
+                                <i class="fab fa-tiktok"></i>
+                                <span>抖音</span>
+                            </a>
+                            <a class="link-item" href="https://www.youku.com" target="_blank">
+                                <i class="fas fa-film"></i>
+                                <span>优酷</span>
+                            </a>
+                            <a class="link-item" href="https://www.youtube.com/@Hasoook" target="_blank">
+                                <i class="fab fa-youtube"></i>
+                                <span>YouTube</span>
+                            </a>
+                            <a class="link-item" href="https://v.qq.com/s/videoplus/9014400745/2" target="_blank">
+                                <i class="fas fa-play"></i>
+                                <span>腾讯视频</span>
+                            </a>
+                            <a class="link-item" href="https://www.kuaishou.com/profile/3xgqqsnwdbw95du" target="_blank">
+                                <i class="fas fa-video"></i>
+                                <span>快手</span>
+                            </a>
+                            <a class="link-item" href="https://author.baidu.com/home?context=%7B%22uk%22%3A%22Vpl_ODvZ0k2w2bIAZumKMg%22%7D" target="_blank">
+                                <i class="fas fa-play-circle"></i>
+                                <span>百家号</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="link-category">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <i class="fas fa-code"></i>
+                            <span>开发社区</span>
+                        </div>
+                    </div>
+                    <div class="scroll-container">
+                        <div class="links-list">
+                            <a class="link-item" href="https://github.com/Hasook" target="_blank">
+                                <i class="fab fa-github"></i>
+                                <span>GitHub</span>
+                            </a>
+                            <a class="link-item" href="https://center.mcmod.cn/45187" target="_blank">
+                                <i class="fab fa-stack-overflow"></i>
+                                <span>MC模组百科</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="link-category">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <i class="fas fa-hashtag"></i>
+                            <span>社交媒体</span>
+                        </div>
+                    </div>
+                    <div class="scroll-container">
+                        <div class="links-list">
+                            <a class="link-item" href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=jCwvLHP5HiPuBQ-wOiw3JnJnSJMjcFU6&authKey=1sGo5cpjlrEG4czF6ZwheOhViZKHtn%2BVJ0kEb4tnnadaPXHUJtwHRUEZqSf8QXnj&noverify=0&group_code=792490331" target="_blank">
+                                <i class="fab fa-qq"></i>
+                                <span>QQ群聊</span>
+                            </a>
+                            <a class="link-item" href="https://weibo.com/u/3159304872" target="_blank">
+                                <i class="fab fa-weibo"></i>
+                                <span>微博</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="https://space.bilibili.com/your-bilibili-id" target="_blank" title="B站">
+                        <i class="fab fa-bilibili"></i>
+                    </a>
+                    <a href="https://github.com/Hasook" target="_blank" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="2656053560@qq.com" title="邮箱联系">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+                <div class="copyright">
+                    &copy; 2025 Hasoook. 版权所有 | hasoook.com
+                </div>
+            </div>
+        </footer>
     </div>
+
+    <script>
+        // 主题切换功能
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // 检查本地存储中的主题偏好
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // 计划筛选和分页功能
+        const filterTags = document.querySelectorAll('.filter-tag');
+        const planCards = document.querySelectorAll('.plan-card');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const currentPageEl = document.getElementById('currentPage');
+        const totalPagesEl = document.getElementById('totalPages');
+        
+        let activeStatus = 'active'; // 默认显示活跃项目
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        let filteredCards = [];
+        let totalPages = 1;
+
+        // 初始化
+        updateFilteredCards();
+        updatePagination();
+
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                // 更新活跃标签样式
+                filterTags.forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+                
+                // 更新筛选条件
+                if (tag.hasAttribute('data-status')) {
+                    activeStatus = tag.getAttribute('data-status');
+                }
+                
+                // 重置到第一页并应用筛选
+                currentPage = 1;
+                updateFilteredCards();
+                updatePagination();
+                showCurrentPage();
+            });
+        });
+
+        // 分页按钮事件
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+                showCurrentPage();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+                showCurrentPage();
+            }
+        });
+
+        function updateFilteredCards() {
+            filteredCards = Array.from(planCards).filter(card => {
+                const status = card.getAttribute('data-status');
+                
+                // 根据当前筛选条件决定是否显示
+                switch(activeStatus) {
+                    case 'active':
+                        // 活跃项目：进行中或待开始
+                        return status === 'in-progress' || status === 'upcoming';
+                    case 'all':
+                        // 所有项目
+                        return true;
+                    case 'completed':
+                        // 仅已结束
+                        return status === 'completed';
+                    case 'paused':
+                        // 仅暂停
+                        return status === 'paused';
+                    default:
+                        return false;
+                }
+            });
+            
+            // 更新总页数
+            totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+        }
+
+        function updatePagination() {
+            // 更新分页信息
+            currentPageEl.textContent = currentPage;
+            totalPagesEl.textContent = totalPages;
+            
+            // 更新按钮状态
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+        }
+
+        function showCurrentPage() {
+            // 先隐藏所有卡片
+            planCards.forEach(card => {
+                card.classList.add('hidden');
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+            });
+            
+            // 计算当前页应该显示哪些卡片
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentPageCards = filteredCards.slice(startIndex, endIndex);
+            
+            // 显示当前页的卡片
+            currentPageCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.remove('hidden');
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100); // 添加延迟以创建交错动画效果
+            });
+        }
+
+        // 为滚动容器添加滚动检测，实现滚动时显示滚动条
+        document.querySelectorAll('.scroll-container').forEach(container => {
+            container.addEventListener('scroll', () => {
+                container.style.scrollbarWidth = 'thin';
+                setTimeout(() => {
+                    if (!container.matches(':hover')) {
+                        container.style.scrollbarWidth = 'none';
+                    }
+                }, 1000);
+            });
+
+            container.addEventListener('mouseleave', () => {
+                container.style.scrollbarWidth = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
