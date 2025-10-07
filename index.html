@@ -63,12 +63,26 @@
                 radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 20%),
                 radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 20%);
             transition: var(--transition);
+            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        /* 粒子背景效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.2;
         }
 
         header {
@@ -78,6 +92,8 @@
             width: 100%;
             margin-bottom: 4rem;
             padding: 1rem 0;
+            position: relative;
+            z-index: 10;
         }
 
         .logo {
@@ -99,10 +115,35 @@
             font-weight: 700;
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
         }
 
         .logo:hover .logo-icon {
             transform: rotate(10deg) scale(1.05);
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
         }
 
         .logo-text h1 {
@@ -110,6 +151,22 @@
             font-weight: 700;
             color: var(--text-color);
             letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .logo-text h1::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        .logo:hover .logo-text h1::after {
+            width: 100%;
         }
 
         .logo-text p {
@@ -153,7 +210,7 @@
         }
 
         .theme-toggle:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) rotate(90deg);
             box-shadow: 0 6px 16px var(--shadow);
         }
 
@@ -164,10 +221,22 @@
 
         .hero {
             text-align: center;
-            margin-bottom: 6rem; /* 增加间距 */
+            margin-bottom: 6rem;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s forwards 0.3s;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .hero h2 {
@@ -178,13 +247,28 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1.2;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
         }
 
         .hero p {
             color: var(--text-light);
             font-size: 1.1rem;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 2rem auto 0;
+            line-height: 1.8;
         }
 
         .nav-grid {
@@ -192,7 +276,10 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             width: 100%;
-            margin-bottom: 5rem; /* 增加间距 */
+            margin-bottom: 5rem;
+            position: relative;
+            z-index: 10;
+            perspective: 1000px;
         }
 
         .nav-card {
@@ -208,7 +295,16 @@
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
+            opacity: 0;
+            transform: translateY(30px) rotateX(10deg);
+            animation: fadeUp 0.8s forwards;
         }
+
+        .nav-card:nth-child(1) { animation-delay: 0.4s; }
+        .nav-card:nth-child(2) { animation-delay: 0.5s; }
+        .nav-card:nth-child(3) { animation-delay: 0.6s; }
+        .nav-card:nth-child(4) { animation-delay: 0.7s; }
 
         .nav-card::before {
             content: '';
@@ -224,7 +320,7 @@
         }
 
         .nav-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) rotateX(0);
             box-shadow: 0 16px 40px var(--shadow);
             border-color: var(--primary-color);
         }
@@ -239,22 +335,25 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             transition: var(--transition);
+            transform: translateZ(10px);
         }
 
         .nav-card:hover i {
-            transform: scale(1.1);
+            transform: scale(1.1) translateZ(10px);
         }
 
         .nav-card h3 {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--text-color);
+            transform: translateZ(5px);
         }
 
         .nav-card p {
             color: var(--text-muted);
             font-size: 0.95rem;
             line-height: 1.6;
+            transform: translateZ(3px);
         }
 
         .card-link {
@@ -266,6 +365,7 @@
             font-size: 0.9rem;
             margin-top: auto;
             transition: var(--transition);
+            transform: translateZ(2px);
         }
 
         .card-link i {
@@ -281,18 +381,36 @@
 
         /* 计划区域新样式 */
         .plans-section {
-            margin: 6rem 0; /* 增加间距 */
+            margin: 6rem 0;
             width: 100%;
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s forwards 0.8s;
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             color: var(--text-color);
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
         }
 
         .section-title i {
@@ -320,6 +438,8 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .filter-tag.active {
@@ -331,6 +451,7 @@
         .filter-tag:hover:not(.active) {
             border-color: var(--primary-color);
             color: var(--text-color);
+            transform: translateY(-2px);
         }
 
         /* 计划卡片容器 */
@@ -350,20 +471,37 @@
             transition: var(--transition);
             display: flex;
             flex-direction: column;
-            opacity: 1;
-            transform: translateY(0);
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), transparent);
+            transition: var(--transition);
+            border-radius: 0 0 0 100%;
         }
 
         .plan-card.hidden {
             display: none;
-            opacity: 0;
-            transform: translateY(20px);
         }
 
         .plan-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary-color);
             box-shadow: 0 12px 32px var(--shadow);
+        }
+
+        .plan-card:hover::after {
+            width: 100px;
+            height: 100px;
         }
 
         .plan-header {
@@ -410,6 +548,11 @@
             font-size: 1.25rem;
             margin-bottom: 0.75rem;
             color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .plan-card:hover .plan-title {
+            color: var(--primary-color);
         }
 
         .plan-description {
@@ -470,6 +613,24 @@
             display: flex;
             align-items: center;
             gap: 0.25rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.25rem 0;
+        }
+
+        .plan-actions::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .plan-actions:hover::after {
+            width: 100%;
         }
 
         /* 分页控件样式 */
@@ -500,6 +661,7 @@
             background: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
+            transform: translateY(-2px);
         }
 
         .pagination-btn.active {
@@ -521,8 +683,13 @@
 
         /* 相关链接部分 */
         .related-links {
-            margin-top: 6rem; /* 增加间距 */
+            margin-top: 6rem;
             width: 100%;
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s forwards 1s;
         }
 
         .links-grid {
@@ -543,12 +710,30 @@
             flex-direction: column;
             height: 100%;
             min-height: 320px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.02), transparent 30%);
+            opacity: 0;
+            transition: var(--transition);
         }
 
         .link-category:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 20px var(--shadow);
             border-color: var(--primary-color);
+        }
+
+        .link-category:hover::before {
+            opacity: 1;
         }
 
         .category-header {
@@ -591,12 +776,30 @@
             cursor: pointer;
             color: var(--text-light);
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
 
         .link-item:hover {
             background: var(--card-hover);
             color: var(--text-color);
             transform: translateX(4px);
+        }
+
+        .link-item:hover::before {
+            transform: translateX(100%);
         }
 
         .link-item i {
@@ -656,13 +859,18 @@
         }
 
         footer {
-            margin-top: 6rem; /* 增加间距 */
+            margin-top: 6rem;
             text-align: center;
             color: var(--text-muted);
             font-size: 0.9rem;
             padding: 2rem 0;
             border-top: 1px solid var(--border-color);
             width: 100%;
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s forwards 1.2s;
         }
 
         .footer-content {
@@ -689,12 +897,31 @@
             color: var(--text-color);
             font-size: 1.2rem;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: var(--transition);
         }
 
         .social-links a:hover {
             background: var(--primary-color);
             color: white;
-            transform: translateY(-4px);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .social-links a:hover::before {
+            opacity: 0.1;
         }
 
         .copyright {
@@ -738,10 +965,13 @@
     </style>
 </head>
 <body>
+    <div class="particles" id="particles"></div>
     <div class="container">
         <header>
             <div class="logo">
-                <div class="logo-icon">H</div>
+                <div class="logo-icon">
+                  <img src="Hasook.github.io/img/psc.jpg" alt="Hasoook" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                </div>
                 <div class="logo-text">
                     <h1>Hasoook</h1>
                     <p>我的世界模组开发者 & B站UP主</p>
@@ -985,13 +1215,13 @@
         <footer>
             <div class="footer-content">
                 <div class="social-links">
-                    <a href="https://space.bilibili.com/your-bilibili-id" target="_blank" title="B站">
+                    <a href="https://space.bilibili.com/38047059" target="_blank" title="B站">
                         <i class="fab fa-bilibili"></i>
                     </a>
                     <a href="https://github.com/Hasook" target="_blank" title="GitHub">
                         <i class="fab fa-github"></i>
                     </a>
-                    <a href="2656053560@qq.com" title="邮箱联系">
+                    <a href="mailto:2656053560@qq.com" title="邮箱联系">
                         <i class="fas fa-envelope"></i>
                     </a>
                 </div>
@@ -1003,6 +1233,53 @@
     </div>
 
     <script>
+        // 创建粒子背景效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                const size = Math.random() * 3 + 1;
+                
+                particle.style.position = 'absolute';
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = Math.random() > 0.5 ? '#6366f1' : '#06b6d4';
+                particle.style.borderRadius = '50%';
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animation = `float ${Math.random() * 10 + 10}s linear infinite`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 添加粒子浮动动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% {
+                    transform: translate(0, 0) rotate(0deg);
+                }
+                25% {
+                    transform: translate(20px, -10px) rotate(10deg);
+                }
+                50% {
+                    transform: translate(0, -20px) rotate(0deg);
+                }
+                75% {
+                    transform: translate(-20px, -10px) rotate(-10deg);
+                }
+                100% {
+                    transform: translate(0, 0) rotate(0deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
         // 主题切换功能
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i');
@@ -1133,7 +1410,7 @@
             const endIndex = startIndex + itemsPerPage;
             const currentPageCards = filteredCards.slice(startIndex, endIndex);
             
-            // 显示当前页的卡片
+            // 显示当前页的卡片，添加延迟动画
             currentPageCards.forEach((card, index) => {
                 setTimeout(() => {
                     card.classList.remove('hidden');
@@ -1141,7 +1418,7 @@
                         card.style.opacity = '1';
                         card.style.transform = 'translateY(0)';
                     }, 50);
-                }, index * 100); // 添加延迟以创建交错动画效果
+                }, index * 100);
             });
         }
 
@@ -1159,6 +1436,16 @@
             container.addEventListener('mouseleave', () => {
                 container.style.scrollbarWidth = 'none';
             });
+        });
+
+        // 页面加载完成后初始化粒子效果和计划卡片动画
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // 显示计划卡片
+            setTimeout(() => {
+                showCurrentPage();
+            }, 1000);
         });
     </script>
 </body>
